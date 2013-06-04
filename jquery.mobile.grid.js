@@ -232,6 +232,11 @@ var methods=
     return this.each(function()
         {
         var Grid=$(this);
+        var ScrollID=this.id+'-scroll';
+
+        Grid.wrap('<div id="'+this.id+'-wrapper" class="ui-jqmGrid-wrapper" />');
+        Grid.wrap('<div id="'+ScrollID+'"  class="ui-jqmGrid-scroll" />');
+
         Grid.addClass("ui-jqmGrid ui-jqmGrid-ul ui-jqmGrid-ur ui-jqmGrid-ll ui-jqmGrid-lr");
 
         var BC="ui-btn-up-"+settings.headerTheme;
@@ -240,7 +245,7 @@ var methods=
         Grid.data("cols",cols);
         Grid.data("settings",settings);
 
-        var col,colLabel,colStyle,colClass,colWidth,colHidden;
+        var col,colLabel,colStyle,colWidth,colClass,colWidth,colHidden;
         var FC=0;
 
         var H='<thead><tr id="colrow" class="'+BC+'">';
@@ -253,6 +258,7 @@ var methods=
           col.index=i;
           col.ascend=false;
           colStyle="";
+          colWidth="";
 
           if(!col.hasOwnProperty('label'))
             col.label="";
@@ -291,7 +297,9 @@ var methods=
                var w=(colWidth*100)+"%";
             else
                var w=colWidth+"px";
-            colStyle+="width:"+w+";"+col.hdrStyle
+
+            colWidth="width:"+w+";";
+            colStyle+=colWidth+col.hdrStyle
             }
 
           ////////
@@ -329,12 +337,18 @@ var methods=
           ////////
 
           colClass+="ui-btn-up-"+settings.headerTheme+" ui-jqmGrid-col-header";
-          H += '<th id="'+col.name+'"'+(colStyle==""?"":' style="'+colStyle+'"')+(colClass==""?"":' class="'+colClass+'"')+'>'+colLabel+'</th>';
+          H += '<th id="'+col.name+'" align="left"'+(colStyle==""?"":' style="'+colStyle+'"')+(colClass==""?"":' class="'+colClass+'"')+'><span style="'+colWidth+'" class="ui-jqmGrid-header-text '+colClass+'">'+colLabel+'</span></th>';
           }
         H += '</tr></thead>';
 
         H += '<tbody><tr id="footerrow" class="'+BC+'"><td colspan='+FC+' class="ui-jqmGrid-ll ui-jqmGrid-lr"></td></tr></tbody>';
         Grid.html(H);
+
+
+var tw=$("#"+ScrollID);
+tw.width(Grid.width()+21);
+
+
 
         var colRowCells=Grid.find(".ui-jqmGrid-col-header");
         var BHv="ui-btn-hover-"+settings.headerTheme;

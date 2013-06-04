@@ -16,8 +16,8 @@
 <script type="text/javascript" src="/bdxroot/jQueryMobile/1.3.1/jquery.mobile.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen" href="/bdxroot/jQueryMobile/1.3.1/jquery.mobile.min.css" />
 
-<script type="text/javascript" src="/bdxroot/jQueryMobile/jqmGrid/0.0.2/jquery.mobile.grid.js"></script>
-<link rel="stylesheet" type="text/css" media="screen" href="/bdxroot/jQueryMobile/jqmGrid/0.0.2/jquery.mobile.grid.css" />
+<script type="text/javascript" src="/bdxroot/jQueryMobile/jqmGrid/0.0.3/jquery.mobile.grid.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/bdxroot/jQueryMobile/jqmGrid/0.0.3/jquery.mobile.grid.css" />
 
 
 
@@ -64,6 +64,41 @@ text-align:left;
 
 <script>
 
+
+function FormatNumber(v,dec)
+
+{
+return(v+" ");
+}
+
+$(document).on("pageinit",function()
+{
+var i;
+var YieldCostMarginGridData=[];
+var YieldClass="";
+var CostClass="";
+var MarginClass="";
+
+for(var i=0;i<40;i++)
+  {
+  YieldCostMarginGridData[i]=
+    {
+    RowID:     {value:i},
+    TeamID:    {value:"ti-"+i},
+    TeamName:  {value:"tn-"+i},
+    Yield:     {value:"yl-"+i,class:YieldClass},
+    Cost:      {value:"cs-"+i,class:CostClass},
+    Margin:    {value:"mr-"+i,class:MarginClass}
+    }
+  }
+
+$("#tableYieldCostMargin").jqmGrid("setData", YieldCostMarginGridData);
+
+
+});
+
+
+
 function x()
 
 {
@@ -89,19 +124,24 @@ tw.width(gr.width()+21);
   <div data-role="content" id="contentTestGrid">
 
 
-<button onClick="x();">x</button><br>
+<button data-inline="true" onClick="x();">x</button><br>
 
-
+<!--
 <div id="table-wrapper"><div id="table-scroll">
 
-    <table data-role="qqqgrid" id="tableYieldCostMargin" class="jqmGridTable">
-      <thead><tr data-role="gridcolumns">
-        <th id="RowID"    data-hidden="true"  width=70  align=left><span class="text" style="width:70px;">rowid</span></th>
-        <th id="TeamID"   data-hidden="false" width=70  align=left><span class="text" style="width:70px;">Team #</span></th>
-        <th id="TeamName"                     width=300 align=left><span class="text" style="width:300px;">Bank Name</span></th>
-        <th id="Yield"                        width=125 align=left data-format="function(value){return FormatNumber(value*100,2);}"><span class="text" style="width:125px;">Yield</span></th>
-        <th id="Cost"                         width=125 align=left data-format="function(value){return FormatNumber(value*100,2);}"><span class="text" style="width:125px;text-align:center;">Cost</span></th>
-        <th id="Margin"                       width=125 align=left data-format="function(value){return FormatNumber(value*100,2);}"><span class="text" style="width:125px;">Margin</span></th>
+
+<span class="text" style="width:125px;">    </span>
+
+-->
+
+    <table data-role="grid" id="tableYieldCostMargin" class="jqmGridTable">
+      <thead><tr>
+        <th id="RowID"    data-hidden="true"           ></th>
+        <th id="TeamID"   data-hidden="false" width=70 >Team #</th>
+        <th id="TeamName"                     width=300>Bank Name</th>
+        <th id="Yield"                        width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Yield</th>
+        <th id="Cost"                         width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Cost</th>
+        <th id="Margin"                       width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Margin</th>
       </tr></thead>
 
 <tbody>
@@ -141,7 +181,9 @@ tw.width(gr.width()+21);
 
     </table>
 
+<!--
 </div></div>
+-->
 
 <!--
 
@@ -177,3 +219,55 @@ var YieldCostMarginGrid=
 </body>
 
 </html>
+
+
+//////////////////////////////////////////////////////////////
+
+<div id="div-table-wrapper" class="ui-jqmGrid-table-wrapper">
+  <div id="div-table-header" class="ui-jqmGrid-table-header">
+    <table id="tableYieldCostMarginHeader" class="ui-jqmGrid-table-header ui-jqmGrid-ul ui-jqmGrid-ur">
+      <thead>
+      <tr class="ui-btn-up-b">
+        <th id="RowID"     style="display:none;">rowid</th>
+        <th id="TeamID"    width=70 class="ui-jqmGrid-ul">Team #</th>
+        <th id="TeamName"  width=300>Bank Name</th>
+        <th id="Yield"     width=125 data-format="function(value){return FormatNumber(value*100,2);}">Yield</th>
+        <th id="Cost"      width=125 data-format="function(value){return FormatNumber(value*100,2);}">Cost</th>
+        <th id="Margin"    width=125 data-format="function(value){return FormatNumber(value*100,2);}">Margin</th>
+        <th id="scrollbar" width=21 class="ui-jqmGrid-ur"></th>
+      </tr>
+      </thead>
+    </table>
+  </div>
+  <div id="div-table-body" class="ui-jqmGrid-table-body">
+    <table id="tableYieldCostMargin" class="ui-jqmGrid">
+      <thead>
+      <tr class="">
+        <th id="RowID"    style="display:none;"></th>
+        <th id="TeamID"   width=70  class="ui-jqmGrid-left"></th>
+        <th id="TeamName" width=300 class="ui-jqmGrid-left"></th>
+        <th id="Yield"    width=125 class="ui-jqmGrid-left"></th>
+        <th id="Cost"     width=125 class="ui-jqmGrid-left"></th>
+        <th id="Margin"   width=125 class="ui-jqmGrid-left"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr><td style="display:none;">ri-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-000</td><td class="ui-jqmGrid-horz">mr-000</td></tr>
+      <tr><td style="display:none;">ri-001</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-001</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-001</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-001</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-001</td><td class="ui-jqmGrid-horz">mr-001</td></tr>
+      <tr><td style="display:none;">ri-002</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-002</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-002</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-002</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-002</td><td class="ui-jqmGrid-horz">mr-002</td></tr>
+      <tr><td style="display:none;">ri-003</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-003</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-003</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-003</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-003</td></tr>
+      <tr><td style="display:none;">ri-004</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-004</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-004</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-004</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-004</td></tr>
+      <tr><td style="display:none;">ri-005</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-005</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-005</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-005</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-005</td></tr>
+      <tr><td style="display:none;">ri-006</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-006</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-006</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-006</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-006</td></tr>
+      <tr><td style="display:none;">ri-007</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-007</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-007</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-007</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-007</td></tr>
+      <tr><td style="display:none;">ri-008</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-008</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-008</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-008</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-008</td></tr>
+      <tr><td style="display:none;">ri-009</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-009</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-009</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-009</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-009</td></tr>
+
+      </tbody>
+
+    </table>
+  </div>
+  <div id="div-table-footer" class="ui-jqmGrid-table-footer ui-btn-up-b ui-jqmGrid-ll ui-jqmGrid-lr">
+  </div>
+</div>
+
