@@ -594,7 +594,6 @@ columnRow.each(function(index,th)
     catch(e)
       { column.format=function(){return "err";};}
     }
-
   /////////
 
   Settings.columns[index]=column;
