@@ -34,7 +34,6 @@ background:white;
 .ui-jqmGrid-div-table-body
 {
 padding:0;
-height:150px;
 overflow-y:scroll;
 overflow-x:hidden;
 }

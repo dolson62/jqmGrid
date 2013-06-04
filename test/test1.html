@@ -16,8 +16,8 @@
 <script type="text/javascript" src="/bdxroot/jQueryMobile/1.3.1/jquery.mobile.min.js"></script>
 <link rel="stylesheet" type="text/css" media="screen" href="/bdxroot/jQueryMobile/1.3.1/jquery.mobile.min.css" />
 
-<script type="text/javascript" src="/bdxroot/jQueryMobile/jqmGrid/0.0.4/jquery.mobile.grid.js"></script>
-<link rel="stylesheet" type="text/css" media="screen" href="/bdxroot/jQueryMobile/jqmGrid/0.0.4/jquery.mobile.grid.css" />
+<script type="text/javascript" src="/bdxroot/jQueryMobile/jqmGrid/0.0.5/jquery.mobile.grid.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/bdxroot/jQueryMobile/jqmGrid/0.0.5/jquery.mobile.grid.css" />
 
 
 
@@ -50,7 +50,7 @@ var TestData=[];
 function x()
 
 {
-for(var i=0;i<3;i++)
+for(var i=0;i<30;i++)
   {
   TestData[i]=
     {
@@ -66,6 +66,13 @@ for(var i=0;i<3;i++)
 $("#tableYieldCostMargin").jqmGrid("setData", TestData);
 
 }
+
+
+$(document).on("pageinit",function()
+{
+//x();
+});
+
 
 </script>
 
@@ -83,7 +90,7 @@ $("#tableYieldCostMargin").jqmGrid("setData", TestData);
   <div data-role="content" id="contentTestGrid">
 
 
-<table data-role="grid" id="tableYieldCostMargin">
+<table data-role="grid" id="tableYieldCostMargin" height=150>
   <thead><tr>
     <th id="RowID"    data-hidden="true"              ></th>
     <th id="TeamID"   data-hidden="false" width=70    >Team #</th>
@@ -92,6 +99,17 @@ $("#tableYieldCostMargin").jqmGrid("setData", TestData);
     <th id="Cost"                         width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Cost</th>
     <th id="Margin"                       width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Margin</th>
   </tr></thead>
+  <tbody>
+    <tr> <td>01</td> <td>ti-01</td> <td>tn-01</td> <td>01</td> <td>02</td> <td>03</td> </tr>
+    <tr> <td>02</td> <td>ti-02</td> <td>tn-02</td> <td>02</td> <td>03</td> <td>04</td> </tr>
+    <tr> <td>03</td> <td>ti-03</td> <td>tn-03</td> <td>03</td> <td>04</td> <td>05</td> </tr>
+    <tr> <td>04</td> <td>ti-04</td> <td>tn-04</td> <td>04</td> <td>05</td> <td>06</td> </tr>
+    <tr> <td>05</td> <td>ti-05</td> <td>tn-05</td> <td>05</td> <td>06</td> <td>07</td> </tr>
+    <tr> <td>06</td> <td>ti-06</td> <td>tn-06</td> <td>06</td> <td>07</td> <td>08</td> </tr>
+    <tr> <td>07</td> <td>ti-07</td> <td>tn-07</td> <td>07</td> <td>08</td> <td>09</td> </tr>
+    <tr> <td>08</td> <td>ti-08</td> <td>tn-08</td> <td>08</td> <td>09</td> <td>10</td> </tr>
+  </tbody>
+
 </table>
 
 
@@ -117,7 +135,7 @@ $("#tableYieldCostMargin").jqmGrid("setData", TestData);
     </table>
   </div>
 
-  <div id="div-table-body" class="ui-jqmGrid-div-table-body ui-jqmGrid-table-background">
+  <div id="div-table-body" style="max-height:150px;" class="ui-jqmGrid-div-table-body ui-jqmGrid-table-background">
     <table id="tableYieldCostMargin" class="ui-jqmGrid-table">
       <thead>
       <tr class="">
