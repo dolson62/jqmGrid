@@ -13,28 +13,28 @@ font-weight:400;
 {
 -moz-border-radius-topleft:6px;
 -webkit-border-top-left-radius:6px;
-border-top-left-radius:6px
+border-top-left-radius:6px;
 }
 
 .ui-jqmGrid-ur
 {
 -moz-border-radius-topright:6px;
 -webkit-border-top-right-radius:6px;
-border-top-right-radius:6px
+border-top-right-radius:6px;
 }
 
 .ui-jqmGrid-ll
 {
 -moz-border-radius-bottomleft:6px;
 -webkit-border-bottom-left-radius:6px;
-border-bottom-left-radius:6px
+border-bottom-left-radius:6px;
 }
 
 .ui-jqmGrid-lr
 {
 -moz-border-radius-bottomright:6px;
 -webkit-border-bottom-right-radius:6px;
-border-bottom-right-radius:6px
+border-bottom-right-radius:6px;
 }
 
 .ui-jqmGrid-horz
@@ -53,7 +53,7 @@ border-right:1px solid silver;
 }
 
 
-.col-Header
+.ui-jqmGrid-col-header
 {
 border-left: 0 !important;
 border-top: 0 !important;

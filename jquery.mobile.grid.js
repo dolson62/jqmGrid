@@ -1,13 +1,4 @@
-//
-//
-//
-// $("table:jqmData(role='grid')")
-//
-//
-//
-//
-
-
+/////////////////////////////////////////////////////
 
 function colOfName(cols,N)
 
@@ -295,7 +286,13 @@ var methods=
             colWidth=0;
 
           if(colWidth!=0)
-            colStyle+="width:"+colWidth+"px;"+col.hdrStyle;
+            {
+            if((colWidth>0)&&(colWidth<1))
+               var w=(colWidth*100)+"%";
+            else
+               var w=colWidth+"px";
+            colStyle+="width:"+w+";"+col.hdrStyle
+            }
 
           ////////
 
@@ -331,7 +328,7 @@ var methods=
             }
           ////////
 
-          colClass+="ui-btn-up-"+settings.headerTheme+" col-Header";
+          colClass+="ui-btn-up-"+settings.headerTheme+" ui-jqmGrid-col-header";
           H += '<th id="'+col.name+'"'+(colStyle==""?"":' style="'+colStyle+'"')+(colClass==""?"":' class="'+colClass+'"')+'>'+colLabel+'</th>';
           }
         H += '</tr></thead>';
@@ -339,7 +336,7 @@ var methods=
         H += '<tbody><tr id="footerrow" class="'+BC+'"><td colspan='+FC+' class="ui-jqmGrid-ll ui-jqmGrid-lr"></td></tr></tbody>';
         Grid.html(H);
 
-        var colRowCells=Grid.find(".col-Header");
+        var colRowCells=Grid.find(".ui-jqmGrid-col-header");
         var BHv="ui-btn-hover-"+settings.headerTheme;
         var BUp="ui-btn-up-"+settings.headerTheme;
         var BDn="ui-btn-down-"+settings.headerTheme;
@@ -354,15 +351,6 @@ var methods=
 
         });
 
-    },
-  doSomething: function(param1,param2)
-    {
-    return this.each(function()
-      {
-
-      //.........
-
-      });
     },
   columnLabel: function(colID,newLabel)
     {
@@ -423,5 +411,94 @@ var methods=
     };
 
 })(jQuery);
+
+///////////////////////////////////
+
+function extractSettings(Grid,columnRow)
+
+{
+var Settings=new Object;
+Settings.columns=[];
+
+columnRow.each(function(index,th)
+  {
+  var column=new Object;
+  /////////
+  column.index=index;
+  /////////
+  column.name =th.id;
+  /////////
+  column.label=th.innerHTML;
+  /////////
+  var hidden=$(th).attr("data-hidden");
+  if(typeof hidden==="undefined")
+    hidden=false
+  else if (typeof hidden==="string")
+    hidden=(hidden.toLowerCase()==="true");
+  column.hidden=hidden;
+  /////////
+  var width=$(th).attr("width");
+  var isPercent=false;
+  if(typeof width==="undefined")
+    width=0;
+  else
+    {
+    isPercent=width.indexOf("%")>0;
+    width=parseFloat(width);
+    if(isNaN(width))
+       width=0
+    else if(isPercent)
+       width/=100
+    }
+  column.width=width;
+  /////////
+  var align=$(th).attr("align");
+  if(typeof align!=="undefined")
+    column.align=align;
+  /////////
+  var format=$(th).attr("data-format");
+  if(typeof format==="string")
+    {
+    try
+      { column.format=eval("("+format+");"); }
+    catch(e)
+      { column.format=function(){return "err";};}
+    }
+
+  /////////
+
+  Settings.columns[index]=column;
+  });
+
+return(Settings);
+}
+
+
+function enhanceGrids()
+
+{
+$("table:jqmData(role='grid')").each(function()
+  {
+  var Grid=$(this);
+  var columnRow=Grid.find("thead th");
+  if(columnRow.length==0)
+    columnRow=Grid.find("tr:jqmData(role='gridcolumns') th");
+  if(columnRow.length==0)
+    columnRow=Grid.find("tr:jqmData(role='gridcolumns') td");
+  if(columnRow.length==0)
+    columnRow=Grid.find("tr th");
+
+  if(columnRow.length!=0)
+    {
+    var Settings=extractSettings(Grid,columnRow);
+    Grid.jqmGrid(Settings);
+    }
+  });
+}
+
+$(document).on("pageinit",function()
+{
+enhanceGrids();
+});
 
 

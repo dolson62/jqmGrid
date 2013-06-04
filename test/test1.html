@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+                                                                                                                                              <!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="WebPortalz Computed HTML Producer">
+<meta http-equiv="Cache-Control" content="no-cache, max-age=0, must-revalidate, no-store">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="-1">
+
+
+<script type="text/javascript" src="/bdxroot/jQuery/1.9.0/jquery.min.js"></script>
+
+<script type="text/javascript" src="/bdxroot/jQueryMobile/1.3.1/jquery.mobile.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/bdxroot/jQueryMobile/1.3.1/jquery.mobile.min.css" />
+
+<script type="text/javascript" src="/bdxroot/jQueryMobile/jqmGrid/0.0.2/jquery.mobile.grid.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/bdxroot/jQueryMobile/jqmGrid/0.0.2/jquery.mobile.grid.css" />
+
+
+
+
+<style>
+
+.jqmGridTable
+{
+}
+
+
+
+#table-wrapper
+{
+position:relative;
+}
+
+#table-scroll
+{
+
+height:150px;
+overflow-y:auto;
+overflow-x:hidden;
+margin-top:20px;
+}
+
+#table-wrapper table
+{
+
+}
+
+#table-wrapper table thead th .text
+{
+position:absolute;
+top:-20px;
+z-index:2;
+height:20px;
+border:1px solid red;
+text-align:left;
+}
+
+</style>
+
+
+<script>
+
+function x()
+
+{
+var tw=$("#table-wrapper");
+var gr=$("#tableYieldCostMargin");
+tw.width(gr.width()+21);
+}
+
+
+</script>
+
+</head>
+
+
+<body>
+
+<div data-role="page" id="pageTestGrid" data-dom-cache="false">
+
+  <div data-role="header" id="headerTestGrid">
+  <h3>jqm Grid Test Page</h3>
+  </div>
+
+  <div data-role="content" id="contentTestGrid">
+
+
+<button onClick="x();">x</button><br>
+
+
+<div id="table-wrapper"><div id="table-scroll">
+
+    <table data-role="qqqgrid" id="tableYieldCostMargin" class="jqmGridTable">
+      <thead><tr data-role="gridcolumns">
+        <th id="RowID"    data-hidden="true"  width=70  align=left><span class="text" style="width:70px;">rowid</span></th>
+        <th id="TeamID"   data-hidden="false" width=70  align=left><span class="text" style="width:70px;">Team #</span></th>
+        <th id="TeamName"                     width=300 align=left><span class="text" style="width:300px;">Bank Name</span></th>
+        <th id="Yield"                        width=125 align=left data-format="function(value){return FormatNumber(value*100,2);}"><span class="text" style="width:125px;">Yield</span></th>
+        <th id="Cost"                         width=125 align=left data-format="function(value){return FormatNumber(value*100,2);}"><span class="text" style="width:125px;text-align:center;">Cost</span></th>
+        <th id="Margin"                       width=125 align=left data-format="function(value){return FormatNumber(value*100,2);}"><span class="text" style="width:125px;">Margin</span></th>
+      </tr></thead>
+
+<tbody>
+<tr><td>ri-000</td><td>ti-000</td><td>tn-000</td><td>yl-000</td><td>cs-000</td><td>mr-000</td></tr>
+<tr><td>ri-001</td><td>ti-001</td><td>tn-001</td><td>yl-001</td><td>cs-001</td><td>mr-001</td></tr>
+<tr><td>ri-002</td><td>ti-002</td><td>tn-002</td><td>yl-002</td><td>cs-002</td><td>mr-002</td></tr>
+<tr><td>ri-003</td><td>ti-003</td><td>tn-003</td><td>yl-003</td><td>cs-003</td><td>mr-003</td></tr>
+<tr><td>ri-004</td><td>ti-004</td><td>tn-004</td><td>yl-004</td><td>cs-004</td><td>mr-004</td></tr>
+<tr><td>ri-005</td><td>ti-005</td><td>tn-005</td><td>yl-005</td><td>cs-005</td><td>mr-005</td></tr>
+<tr><td>ri-006</td><td>ti-006</td><td>tn-006</td><td>yl-006</td><td>cs-006</td><td>mr-006</td></tr>
+<tr><td>ri-007</td><td>ti-007</td><td>tn-007</td><td>yl-007</td><td>cs-007</td><td>mr-007</td></tr>
+<tr><td>ri-008</td><td>ti-008</td><td>tn-008</td><td>yl-008</td><td>cs-008</td><td>mr-008</td></tr>
+<tr><td>ri-009</td><td>ti-009</td><td>tn-009</td><td>yl-009</td><td>cs-009</td><td>mr-009</td></tr>
+
+<tr><td>ri-010</td><td>ti-010</td><td>tn-010</td><td>yl-010</td><td>cs-010</td><td>mr-010</td></tr>
+<tr><td>ri-011</td><td>ti-011</td><td>tn-011</td><td>yl-011</td><td>cs-011</td><td>mr-011</td></tr>
+<tr><td>ri-012</td><td>ti-012</td><td>tn-012</td><td>yl-012</td><td>cs-012</td><td>mr-012</td></tr>
+<tr><td>ri-013</td><td>ti-013</td><td>tn-013</td><td>yl-013</td><td>cs-013</td><td>mr-013</td></tr>
+<tr><td>ri-014</td><td>ti-014</td><td>tn-014</td><td>yl-014</td><td>cs-014</td><td>mr-014</td></tr>
+<tr><td>ri-015</td><td>ti-015</td><td>tn-015</td><td>yl-015</td><td>cs-015</td><td>mr-015</td></tr>
+<tr><td>ri-016</td><td>ti-016</td><td>tn-016</td><td>yl-016</td><td>cs-016</td><td>mr-016</td></tr>
+<tr><td>ri-017</td><td>ti-017</td><td>tn-017</td><td>yl-017</td><td>cs-017</td><td>mr-017</td></tr>
+<tr><td>ri-018</td><td>ti-018</td><td>tn-018</td><td>yl-018</td><td>cs-018</td><td>mr-018</td></tr>
+<tr><td>ri-019</td><td>ti-019</td><td>tn-019</td><td>yl-019</td><td>cs-019</td><td>mr-019</td></tr>
+
+<tr><td>ri-020</td><td>ti-020</td><td>tn-020</td><td>yl-020</td><td>cs-020</td><td>mr-020</td></tr>
+<tr><td>ri-021</td><td>ti-021</td><td>tn-021</td><td>yl-021</td><td>cs-021</td><td>mr-021</td></tr>
+<tr><td>ri-022</td><td>ti-022</td><td>tn-022</td><td>yl-022</td><td>cs-022</td><td>mr-022</td></tr>
+<tr><td>ri-023</td><td>ti-023</td><td>tn-023</td><td>yl-023</td><td>cs-023</td><td>mr-023</td></tr>
+<tr><td>ri-024</td><td>ti-024</td><td>tn-024</td><td>yl-024</td><td>cs-024</td><td>mr-024</td></tr>
+<tr><td>ri-025</td><td>ti-025</td><td>tn-025</td><td>yl-025</td><td>cs-025</td><td>mr-025</td></tr>
+<tr><td>ri-026</td><td>ti-026</td><td>tn-026</td><td>yl-026</td><td>cs-026</td><td>mr-026</td></tr>
+<tr><td>ri-027</td><td>ti-027</td><td>tn-027</td><td>yl-027</td><td>cs-027</td><td>mr-027</td></tr>
+<tr><td>ri-028</td><td>ti-028</td><td>tn-028</td><td>yl-028</td><td>cs-028</td><td>mr-028</td></tr>
+<tr><td>ri-029</td><td>ti-029</td><td>tn-029</td><td>yl-029</td><td>cs-029</td><td>mr-029</td></tr>
+</tbody>
+
+    </table>
+
+</div></div>
+
+<!--
+
+
+$(document).on("pageinit",function()
+{ $("#tableYieldCostMargin").jqmGrid(YieldCostMarginGrid); });
+
+
+var YieldCostMarginGrid=
+  {
+  columns:[
+    {name:"RowID",     label:"",          hidden:true,  width:  0 },
+    {name:"TeamID",    label:"Team #",    hidden:false, width: 70 },
+    {name:"TeamName",  label:"Bank Name", hidden:false, width:300 },
+    {name:"Yield",     label:"Yield",     hidden:false, width: 125, align:"center", format:function(value){return FormatNumber(value*100,2);} },
+    {name:"Cost",      label:"Cost",      hidden:false, width: 125, align:"center", format:function(value){return FormatNumber(value*100,2);} },
+    {name:"Margin",    label:"Margin",    hidden:false, width: 125, align:"center", format:function(value){return FormatNumber(value*100,2);} }
+    ]
+  };
+
+-->
+
+
+  </div>
+
+  <div data-role="footer" id="footerTestGrid" data-position="fixed">
+  <h3>&copy; Olson Research Associates, Inc.</h3>
+  </div>
+
+
+</div>
+
+</body>
+
+</html>
