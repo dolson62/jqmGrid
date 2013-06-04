@@ -31,41 +31,17 @@
 
 <script>
 
-function FormatNumber(N,DecPlcs)
-{
-try
-  {
-  var s=N.toFixed(DecPlcs);
-  return(DecPlcs < 4?s.replace(/\B(?=(\d{3})+(?!\d))/g, ","):s);
-  }
-catch(e)
-  {
-  return("");
-  }
-}
-
-
-var TestData=[];
-
 function x()
 
 {
-for(var i=0;i<3;i++)
-  {
-  TestData[i]=
-    {
-    RowID:     {value:i},
-    TeamID:    {value:"ti-"+i},
-    TeamName:  {value:"tn-"+i},
-    Yield:     {value:1+i},
-    Cost:      {value:2+i},
-    Margin:    {value:3+i}
-    }
-  }
-
-$("#tableYieldCostMargin").jqmGrid("setData", TestData);
-
+var tw=$("#div-table-wrapper");
+var gr=$("#tableYieldCostMargin");
+tw.width(gr.width()+21);
 }
+
+
+$(document).on("pageshow",function()
+{ x(); });
 
 </script>
 
@@ -83,54 +59,53 @@ $("#tableYieldCostMargin").jqmGrid("setData", TestData);
   <div data-role="content" id="contentTestGrid">
 
 
+<button data-inline="true" onClick="x();">x</button><br>
+
+<!--
+
 <table data-role="grid" id="tableYieldCostMargin">
   <thead><tr>
-    <th id="RowID"    data-hidden="true"              ></th>
+    <th id="RowID"    data-hidden="true"  width=70    ></th>
     <th id="TeamID"   data-hidden="false" width=70    >Team #</th>
     <th id="TeamName"                     width=300   >Bank Name</th>
-    <th id="Yield"                        width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Yield</th>
-    <th id="Cost"                         width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Cost</th>
-    <th id="Margin"                       width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Margin</th>
+    <th id="Yield"                        width=125 data-format="function(value){return FormatNumber(value*100,2);}">Yield</th>
+    <th id="Cost"                         width=125 data-format="function(value){return FormatNumber(value*100,2);}">Cost</th>
+    <th id="Margin"                       width=125 data-format="function(value){return FormatNumber(value*100,2);}">Margin</th>
   </tr></thead>
 </table>
 
-
-<br>&nbsp;
-<button data-inline="true" onClick="x();">test</button><br>
-<br>&nbsp;<br>
-
+-->
 
 <div id="div-table-wrapper" class="ui-jqmGrid-div-table-wrapper">
   <div id="div-table-header" class="ui-jqmGrid-div-table-header">
-    <table id="tableYieldCostMargin-header" class="ui-jqmGrid-table-header">
+    <table id="tableYieldCostMarginHeader" class="ui-jqmGrid-table-header ui-jqmGrid-ul ui-jqmGrid-ur">
       <thead>
       <tr class="ui-btn-up-b">
         <th id="RowID"     style="display:none;">rowid</th>
-        <th id="TeamID"    style="width:70px;" class="ui-jqmGrid-ul">Team #</th>
-        <th id="TeamName"  style="width:300px;">Bank Name</th>
-        <th id="Yield"     style="width:125px;">Yield</th>
-        <th id="Cost"      style="width:125px;">Cost</th>
-        <th id="Margin"    style="width:125px;">Margin</th>
-        <th id="scrollbar" style="width:20px;" class="ui-jqmGrid-ur"></th>
+        <th id="TeamID"    width=70 class="ui-jqmGrid-ul">Team #</th>
+        <th id="TeamName"  width=300>Bank Name</th>
+        <th id="Yield"     width=125 data-format="function(value){return FormatNumber(value*100,2);}">Yield</th>
+        <th id="Cost"      width=125 data-format="function(value){return FormatNumber(value*100,2);}">Cost</th>
+        <th id="Margin"    width=125 data-format="function(value){return FormatNumber(value*100,2);}">Margin</th>
+        <th id="scrollbar" width=21 class="ui-jqmGrid-ur"></th>
       </tr>
       </thead>
     </table>
   </div>
-
-  <div id="div-table-body" class="ui-jqmGrid-div-table-body ui-jqmGrid-table-background">
+  <div id="div-table-body" class="ui-jqmGrid-table-body">
     <table id="tableYieldCostMargin" class="ui-jqmGrid-table">
       <thead>
       <tr class="">
         <th id="RowID"    style="display:none;"></th>
-        <th id="TeamID"   style="width:70px;"  class="ui-jqmGrid-left ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>
-        <th id="TeamName" style="width:300px;" class="ui-jqmGrid-left ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>
-        <th id="Yield"    style="width:125px;" class="ui-jqmGrid-left ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>
-        <th id="Cost"     style="width:125px;" class="ui-jqmGrid-left ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>
-        <th id="Margin"   style="width:125px;" class="ui-jqmGrid-left ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>
+        <th id="TeamID"   width=70  class="ui-jqmGrid-left"></th>
+        <th id="TeamName" width=300 class="ui-jqmGrid-left"></th>
+        <th id="Yield"    width=125 class="ui-jqmGrid-left"></th>
+        <th id="Cost"     width=125 class="ui-jqmGrid-left"></th>
+        <th id="Margin"   width=125 class="ui-jqmGrid-left"></th>
       </tr>
       </thead>
       <tbody>
-      <tr><td style="display:none;">ri-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-000</td><td class="ui-jqmGrid-horz">mr-000</td><td class="ui-jqmGrid-scroll-data-space"></td></tr>
+      <tr><td style="display:none;">ri-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-000</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-000</td><td class="ui-jqmGrid-horz">mr-000</td></tr>
       <tr><td style="display:none;">ri-001</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-001</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-001</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-001</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-001</td><td class="ui-jqmGrid-horz">mr-001</td></tr>
       <tr><td style="display:none;">ri-002</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-002</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-002</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-002</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-002</td><td class="ui-jqmGrid-horz">mr-002</td></tr>
       <tr><td style="display:none;">ri-003</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-003</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-003</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-003</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-003</td></tr>
@@ -140,15 +115,14 @@ $("#tableYieldCostMargin").jqmGrid("setData", TestData);
       <tr><td style="display:none;">ri-007</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-007</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-007</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-007</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-007</td></tr>
       <tr><td style="display:none;">ri-008</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-008</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-008</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-008</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-008</td></tr>
       <tr><td style="display:none;">ri-009</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">ti-009</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">tn-009</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">yl-009</td><td class="ui-jqmGrid-horz ui-jqmGrid-vert">cs-003</td><td class="ui-jqmGrid-horz">mr-009</td></tr>
+
       </tbody>
 
     </table>
   </div>
-
-  <div id="div-table-footer" class="ui-jqmGrid-div-table-footer ui-btn-up-b ui-jqmGrid-ll ui-jqmGrid-lr"></div>
-
-</div><div style="clear:both;"/>
-
+  <div id="div-table-footer" class="ui-jqmGrid-table-footer ui-btn-up-b ui-jqmGrid-ll ui-jqmGrid-lr">
+  </div>
+</div>
 
 
 <!--

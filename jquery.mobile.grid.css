@@ -1,42 +1,51 @@
-.ui-jqmGrid
+.ui-jqmGrid-div-table-wrapper
+{
+padding:0;
+
+/* shrink-wraps the whole mess... */
+position:relative;
+float:left;
+}
+
+.ui-jqmGrid-div-table-header
+{
+padding:0;
+}
+
+.ui-jqmGrid-table-header
 {
 border-spacing:0;
 }
 
-.ui-jqmGrid-wrapper
+.ui-jqmGrid-table-header td, .ui-jqmGrid-table-header th
 {
-position:relative;
-}
-
-.ui-jqmGrid-scroll
-{
-height:150px;
-overflow-y:auto;
-overflow-x:hidden;
-margin-top:20px;
-}
-
-.ui-jqmGrid-header-text
-{
-position:absolute;
-top:-20px;
-margin-left:-4px;
-z-index:2;
-height:20px;
 padding:4px;
-text-align:center;
+font-weight:400;
 }
 
-.ui-jqmGrid-footer-text
+.ui-jqmGrid-table
 {
-top:150px;
-margin-left:-4px;
-position:absolute;
-z-index:2;
-height:20px;
+border-collapse:collapse;
+border-spacing:0;
+border-left:1px solid silver !important;
+background:white;
 }
 
-.ui-jqmGrid td, .ui-jqmGrid th
+.ui-jqmGrid-div-table-body
+{
+padding:0;
+height:150px;
+overflow-y:scroll;
+overflow-x:hidden;
+}
+
+
+.ui-jqmGrid-table-background
+{
+background:#d0d0d0;
+}
+
+.ui-jqmGrid-table td, .ui-jqmGrid-table th
 {
 padding:4px;
 font-weight:400;
@@ -75,9 +84,22 @@ border-bottom-right-radius:6px;
 border-bottom:1px solid silver;
 }
 
-.ui-jqmGrid-left
+.ui-jqmGrid-body-col-cell
 {
 border-left:1px solid silver;
+padding-top:0 !important;
+padding-bottom:0 !important;
+}
+
+.ui-jqmGrid-scroll-data-space
+{
+padding:0px !important;
+width:1px !important;
+}
+
+.ui-jqmGrid-top
+{
+border-top:1px solid silver;
 }
 
 .ui-jqmGrid-vert
@@ -85,11 +107,31 @@ border-left:1px solid silver;
 border-right:1px solid silver;
 }
 
-
 .ui-jqmGrid-col-header
+{
+border-right:0 !important;
+border-top:1px solid silver !important;
+border-left:1px solid silver !important;
+/* border-top:0 !important; */
+/* border-bottom:1px solid silver !important; */
+}
+
+.ui-jqmGrid-col-body-header
 {
 border-left: 0 !important;
 border-top: 0 !important;
+border-right:0 !important;
+border-bottom:1px solid silver !important;
+}
+
+.ui-jqmGrid-div-table-footer
+{
+padding:0;
+height:20px;
+border-top: 0 !important;
+border-left:1px solid silver !important;
 border-right:1px solid silver !important;
 border-bottom:1px solid silver !important;
 }
+
+
