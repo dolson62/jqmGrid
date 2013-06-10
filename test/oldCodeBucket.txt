@@ -1,0 +1,219 @@
+function gridColSort(Grid,col)
+
+{
+var gridData=Grid.data("gridData");
+if(gridData.length<2) return;
+
+var ascend=col.ascend;
+Grid.data("sortedCol",col);
+
+var sortType=0; // string
+if(col.hasOwnProperty("dataType"))
+  {
+  var DT=col.dataType;
+  if(DT=="integer")
+    sortType=1; // int
+  else if(DT=="float")
+    sortType=2; // float
+  }
+
+var sortFunc;
+if(ascend)
+  {
+  switch(sortType)
+    {
+    case 1:
+      sortFunc=function(d1,d2)
+               {
+               d1=parseInt(d1);if(isNaN(d1)){d1=0};
+               d2=parseInt(d2);if(isNaN(d2)){d2=0};
+               return(d1>d2)
+               };
+      break;
+    case 2:
+      sortFunc=function(d1,d2)
+               {
+               d1=parseFloat(d1);if(isNaN(d1)){d1=0};
+               d2=parseFloat(d2);if(isNaN(d2)){d2=0};
+               return(d1>d2)
+               };
+      break;
+    default:
+      sortFunc=function(d1,d2){return(d1>d2)};
+    }
+  }
+else
+  {
+  switch(sortType)
+    {
+    case 1:
+      sortFunc=function(d1,d2)
+               {
+               d1=parseInt(d1);if(isNaN(d1)){d1=0};
+               d2=parseInt(d2);if(isNaN(d2)){d2=0};
+               return(d1<d2)
+               };
+      break;
+    case 2:
+      sortFunc=function(d1,d2)
+               {
+               d1=parseFloat(d1);if(isNaN(d1)){d1=0};
+               d2=parseFloat(d2);if(isNaN(d2)){d2=0};
+               return(d1<d2)
+               };
+      break;
+    default:
+      sortFunc=function(d1,d2){return(d1<d2)};
+    }
+  }
+
+var gridRowOrder=[];
+for(var ro=0;ro<gridData.length;ro++)
+  { gridRowOrder[ro]=ro; }
+
+var r1,r2,ri1,ri2,rd1,rd2,swap;
+
+for(r1=0;r1<(gridData.length-1);r1++)
+  {
+  for(r2=r1+1;r2<gridData.length;r2++)
+    {
+    ri1=gridRowOrder[r1];
+    ri2=gridRowOrder[r2];
+
+    rd1=(gridData[ri1][col.name]);
+    if(typeof rd1==="object")
+      rd1=rd1.value;
+    rd2=(gridData[ri2][col.name]);
+    if(typeof rd2==="object")
+      rd2=rd2.value;
+
+    if(sortFunc(rd1,rd2))
+      {
+      swap=gridRowOrder[r1];
+      gridRowOrder[r1]=gridRowOrder[r2];
+      gridRowOrder[r2]=swap;
+      }
+    }
+  }
+
+installData(Grid,gridData,gridRowOrder);
+}
+
+
+function installData(Grid,gridData,gridRowOrder)
+
+{
+var cols=Grid.data("cols");
+var settings=Grid.data("settings");
+var sortedCol=Grid.data("sortedCol");
+
+var dataRows=Grid.find("tbody");
+dataRows.find("tr").remove();
+
+Grid.data("gridData",gridData);
+
+var bodyColCells=Grid.find(".body-col-cell");
+if(gridData.length==0)
+  bodyColCells.addClass("ui-jqmGrid-table-background")
+else
+  bodyColCells.removeClass("ui-jqmGrid-table-background");
+
+var col,cellStyle,cellData,cellDef,cellClass,format;
+var rowTheme=settings.dataRowTheme;
+var rowData;
+var dataHTML="";
+
+for(var ri,r=0;r<gridData.length;r++)
+  {
+  var rowHTML='<tr class="ui-body-'+rowTheme+'">';
+
+  ri=gridRowOrder[r];
+  rowData=gridData[ri];
+  if(typeof rowData!=="object")
+     rowData=new Object;
+
+  for(var c=0;c<cols.length;c++)
+    {
+    col=cols[c];
+    cellStyle=col.style;
+    cellData="&nbsp;";
+    cellClass="ui-jqmGrid-horz ui-jqmGrid-vert ";
+
+    if(col.hidden)
+      cellStyle+="display:none;";
+
+    if(col.align!="")
+      cellStyle+="text-align:"+col.align+";";
+
+    if(rowData.hasOwnProperty(col.name))
+      {
+      cellDef=rowData[col.name];
+      if(typeof cellDef!=="object")
+        {
+        cellData=cellDef;
+        cellDef=((new Object).value=cellData);
+        rowData[col.name]=cellDef;
+        }
+      else if(cellDef.hasOwnProperty("value"))
+        cellData=cellDef.value;
+      else
+        {
+        cellData="";
+        cellDef.value="";
+        }
+
+      if(cellDef.hasOwnProperty("format"))
+        format=cellDef.format;
+      else
+        format=col.format;
+
+      if(format)
+        cellData=format(cellData);
+
+      if(cellDef.hasOwnProperty("class"))
+        cellClass+=cellDef.class+" ";
+      if(cellDef.hasOwnProperty("style"))
+        cellStyle+=cellDef.style;
+      }
+
+    rowHTML+='<td'+(cellStyle==""?"":' style="'+cellStyle+'"')+(cellClass==""?"":' class="'+cellClass+'"')+'>'+cellData+'</td>';
+    }
+
+  dataHTML += rowHTML+'</tr>';
+  }
+dataRows.html(dataHTML);
+
+dataRows=Grid.find("tbody tr");
+var BHv="ui-btn-hover-"+settings.dataRowHoverTheme;
+var BUp="ui-body-"+settings.dataRowTheme;
+dataRows.hover(function(){$(this).addClass(BHv).removeClass(BUp);},
+               function(){$(this).removeClass(BHv).addClass(BUp);});
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  setData: function(gridData)
+    {
+    if((typeof gridData==="undefined")||(!(gridData instanceof Array))) return;
+
+    return this.each(function()
+      {
+      var Grid=$(this);
+      var sortedCol=Grid.data("sortedCol");
+      //if((typeof sortedCol==="undefined")||(!sortedCol))
+      if(!sortedCol)
+        {
+        Grid.data("sortedCol",null);
+        var gridRowOrder=[];
+        for(var ro=0;ro<gridData.length;ro++)
+          { gridRowOrder[ro]=ro; }
+        installData(Grid, gridData, gridRowOrder);
+        }
+      else
+        {
+        Grid.data("gridData",gridData);
+        gridColSort(Grid,sortedCol)
+        }
+      });
+    },

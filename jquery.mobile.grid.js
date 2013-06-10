@@ -20,14 +20,204 @@ else if(sortedCol.index!=col.index)
 
 col.ascend=(!col.ascend);
 
-gridColSort(Grid,col);
+var dataPump=Grid.data("dataPump");
+dataPump.sortColumn(this,col);
+//installData(this, dataPump.gridData, dataPump.gridRowOrder)
+gridSiphonData(this);
 }
 
-function gridColSort(Grid,col)
+////////////////////////////////////////////////////////////////////////////////////////
+
+function gridDataRowMetrics(Grid)
 
 {
-var gridData=Grid.data("gridData");
-if(gridData.length<2) return;
+var metrics=Grid.data("dataRowMetrics");
+if(!metrics)
+  {
+  metrics = new Object;
+  var cellMeasureRowHeight=Grid.find("tbody tr");
+  if(cellMeasureRowHeight.length>0)
+    {
+    metrics.rowHeight = cellMeasureRowHeight.height();
+    var divGridBody=$("#"+Grid.attr('id')+"-div-table-wrapper").find(".ui-jqmGrid-div-table-body");
+    metrics.rowsVisible = Math.floor(divGridBody.outerHeight()/metrics.rowHeight)+1;
+    Grid.data("dataRowMetrics",metrics);
+
+    var measureRow=Grid.find("tbody tr.cellMeasure");
+    measureRow.remove();
+    }
+  else
+    metrics.rowHeight = -1;
+  }
+return(metrics);
+}
+
+
+function gridScrolled(divGridBody,scrollHeight,scrollTop)
+
+{
+
+
+          //var $elem = $(event.target), threshold = 100;
+
+          //if(event.target.scrollHeight - $elem.scrollTop() + threshold >= $elem.outerHeight())
+          //  { // Scrolled to bottom, load more data
+          //  }
+
+
+
+var Grid=divGridBody.find(".ui-jqmGrid-table");
+var gridMetrics=gridDataRowMetrics(Grid);
+
+if(gridMetrics.rowHeight==-1) return;
+
+var topVisibleRow=Math.floor(scrollTop/gridMetrics.rowHeight);
+
+
+
+
+
+}
+
+
+
+function gridSiphonData(Grid)
+
+{
+var cols=Grid.data("cols");
+var settings=Grid.data("settings");
+var sortedCol=Grid.data("sortedCol");
+var dataPump=Grid.data("dataPump");
+
+var dataRows=Grid.find("tbody");
+
+
+var col,cellStyle,cellData,cellDef,cellClass,format;
+var rowTheme=settings.dataRowTheme;
+var rowData;
+var dataHTML="";
+var gridMetrics=gridDataRowMetrics(Grid);
+
+
+//
+//
+//
+var dataRowCount=dataPump.gridData.length;
+//
+//
+//
+
+for(var r=0;r<dataRowCount;r++)
+  {
+  var rowHTML='<tr class="newRow ui-body-'+rowTheme+'">';
+
+  //rowData=gridData[r];
+  rowData=dataPump.rowData(r);
+
+  if(typeof rowData!=="object")
+     rowData=new Object;
+
+  for(var c=0;c<cols.length;c++)
+    {
+    col=cols[c];
+    cellStyle=col.style;
+    cellData="&nbsp;";
+    cellClass="ui-jqmGrid-horz ui-jqmGrid-vert ";
+
+    if(col.hidden)
+      cellStyle+="display:none;";
+
+    if(col.align!="")
+      cellStyle+="text-align:"+col.align+";";
+
+    if(rowData.hasOwnProperty(col.name))
+      {
+      cellDef=rowData[col.name];
+      if(typeof cellDef!=="object")
+        {
+        cellData=cellDef;
+        cellDef=((new Object).value=cellData);
+        rowData[col.name]=cellDef;
+        }
+      else if(cellDef.hasOwnProperty("value"))
+        cellData=cellDef.value;
+      else
+        {
+        cellData="";
+        cellDef.value="";
+        }
+
+      if(cellDef.hasOwnProperty("format"))
+        format=cellDef.format;
+      else
+        format=col.format;
+
+      if(format)
+        cellData=format(cellData);
+
+      if(cellDef.hasOwnProperty("class"))
+        cellClass+=cellDef.class+" ";
+      if(cellDef.hasOwnProperty("style"))
+        cellStyle+=cellDef.style;
+      }
+
+    rowHTML+='<td'+(cellStyle==""?"":' style="'+cellStyle+'"')+(cellClass==""?"":' class="'+cellClass+'"')+'>'+cellData+'</td>';
+    }
+
+  dataHTML += rowHTML+'</tr>';
+  }
+dataRows.append(dataHTML);
+
+dataRows=Grid.find("tbody tr.newRow");
+dataRows.removeClass("newRow");
+
+var BHv="ui-btn-hover-"+settings.dataRowHoverTheme;
+var BUp="ui-body-"+settings.dataRowTheme;
+dataRows.hover(function(){$(this).addClass(BHv).removeClass(BUp);},
+               function(){$(this).removeClass(BHv).addClass(BUp);});
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+function LocalDataSetDataPump(localData)
+
+{
+this.totalRows=LocalDataSetDataPump_getTotalRows;
+
+this.resetRowOrder=LocalDataSetDataPump_resetRowOrder;
+this.sortColumn   =LocalDataSetDataPump_sortColumn;
+this.rowData      =LocalDataSetDataPump_rowData;
+
+
+this.gridData=localData;
+this.resetRowOrder();
+
+}
+
+function LocalDataSetDataPump_getTotalRows()
+
+{
+return(gridData.length);
+}
+
+function LocalDataSetDataPump_resetRowOrder()
+
+{
+this.gridRowOrder=[];
+for(var ro=0;ro<this.gridData.length;ro++)
+  { this.gridRowOrder[ro]=ro; }
+}
+
+function LocalDataSetDataPump_rowData(rowIndex)
+
+{
+return((rowIndex<this.gridData.length)?this.gridData[rowIndex]:new Object);
+}
+
+function LocalDataSetDataPump_sortColumn(Grid,col)
+
+{
+if(this.gridData.length<2) return;
 
 var ascend=col.ascend;
 Grid.data("sortedCol",col);
@@ -92,167 +282,32 @@ else
     }
   }
 
-var gridRowOrder=[];
-for(var ro=0;ro<gridData.length;ro++)
-  { gridRowOrder[ro]=ro; }
+this.resetRowOrder();
 
 var r1,r2,ri1,ri2,rd1,rd2,swap;
 
-for(r1=0;r1<(gridData.length-1);r1++)
+for(r1=0;r1<(this.gridData.length-1);r1++)
   {
-  for(r2=r1+1;r2<gridData.length;r2++)
+  for(r2=r1+1;r2<this.gridData.length;r2++)
     {
-    ri1=gridRowOrder[r1];
-    ri2=gridRowOrder[r2];
+    ri1=this.gridRowOrder[r1];
+    ri2=this.gridRowOrder[r2];
 
-    rd1=(gridData[ri1][col.name]);
+    rd1=(this.gridData[ri1][col.name]);
     if(typeof rd1==="object")
       rd1=rd1.value;
-    rd2=(gridData[ri2][col.name]);
+    rd2=(this.gridData[ri2][col.name]);
     if(typeof rd2==="object")
       rd2=rd2.value;
 
     if(sortFunc(rd1,rd2))
       {
-      swap=gridRowOrder[r1];
-      gridRowOrder[r1]=gridRowOrder[r2];
-      gridRowOrder[r2]=swap;
+      swap=this.gridRowOrder[r1];
+      this.gridRowOrder[r1]=this.gridRowOrder[r2];
+      this.gridRowOrder[r2]=swap;
       }
     }
   }
-
-installData(Grid,gridData,gridRowOrder);
-}
-
-
-function installData(Grid,gridData,gridRowOrder)
-
-{
-var cols=Grid.data("cols");
-var settings=Grid.data("settings");
-var sortedCol=Grid.data("sortedCol");
-
-var dataRows=Grid.find("tbody");
-dataRows.find("tr").remove();
-
-Grid.data("gridData",gridData);
-
-var bodyColCells=Grid.find(".body-col-cell");
-if(gridData.length==0)
-  bodyColCells.addClass("ui-jqmGrid-table-background")
-else
-  bodyColCells.removeClass("ui-jqmGrid-table-background");
-
-var col,cellStyle,cellData,cellDef,cellClass,format;
-var rowTheme=settings.dataRowTheme;
-var rowData;
-var dataHTML="";
-
-for(var ri,r=0;r<gridData.length;r++)
-  {
-  var rowHTML='<tr class="ui-body-'+rowTheme+'">';
-
-  ri=gridRowOrder[r];
-  rowData=gridData[ri];
-  if(typeof rowData!=="object")
-     rowData=new Object;
-
-  for(var c=0;c<cols.length;c++)
-    {
-    col=cols[c];
-    cellStyle=col.style;
-    cellData="&nbsp;";
-    cellClass="ui-jqmGrid-horz ui-jqmGrid-vert ";
-
-    if(col.hidden)
-      cellStyle+="display:none;";
-
-    if(col.align!="")
-      cellStyle+="text-align:"+col.align+";";
-
-    if(rowData.hasOwnProperty(col.name))
-      {
-      cellDef=rowData[col.name];
-      if(typeof cellDef!=="object")
-        {
-        cellData=cellDef;
-        cellDef=((new Object).value=cellData);
-        rowData[col.name]=cellDef;
-        }
-      else if(cellDef.hasOwnProperty("value"))
-        cellData=cellDef.value;
-      else
-        {
-        cellData="";
-        cellDef.value="";
-        }
-
-      if(cellDef.hasOwnProperty("format"))
-        format=cellDef.format;
-      else
-        format=col.format;
-
-      if(format)
-        cellData=format(cellData);
-
-      if(cellDef.hasOwnProperty("class"))
-        cellClass+=cellDef.class+" ";
-      if(cellDef.hasOwnProperty("style"))
-        cellStyle+=cellDef.style;
-      }
-
-    rowHTML+='<td'+(cellStyle==""?"":' style="'+cellStyle+'"')+(cellClass==""?"":' class="'+cellClass+'"')+'>'+cellData+'</td>';
-    }
-
-  dataHTML += rowHTML+'</tr>';
-  }
-dataRows.html(dataHTML);
-
-dataRows=Grid.find("tbody tr");
-var BHv="ui-btn-hover-"+settings.dataRowHoverTheme;
-var BUp="ui-body-"+settings.dataRowTheme;
-dataRows.hover(function(){$(this).addClass(BHv).removeClass(BUp);},
-               function(){$(this).removeClass(BHv).addClass(BUp);});
-}
-
-////////////////////////////////////////////////////////////////////////////////////////
-
-function ScrollGrid(divGridBody,scrollHeight,scrollTop)
-
-{
-
-
-          //var $elem = $(event.target), threshold = 100;
-
-          //if(event.target.scrollHeight - $elem.scrollTop() + threshold >= $elem.outerHeight())
-          //  { // Scrolled to bottom, load more data
-          //  }
-
-
-
-var Grid=divGridBody.find(".ui-jqmGrid-table");
-var rowHeight=Grid.data("rowHeight");
-var rowsVisible=Grid.data("rowsVisible");
-if(rowHeight==-1)
-  {
-  var cellMeasureRowHeight=Grid.find("tbody tr");
-  if(cellMeasureRowHeight.length>0)
-    {
-    rowHeight=cellMeasureRowHeight.height();
-    rowsVisible=Math.floor(divGridBody.outerHeight()/rowHeight)+1;
-    Grid.data("rowHeight",rowHeight);
-    Grid.data("rowsVisible",rowsVisible)
-    }
-  }
-
-if(rowHeight==-1) return;
-
-var topRow=Math.floor(scrollTop/rowHeight);
-
-
-
-
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -279,7 +334,9 @@ var methods=
     return this.each(function()
         {
         var Grid=$(this);
-        var BaseID=this.id+"-";
+        var gridID=this.id;
+        var BaseID=gridID+"-";
+
         var scrollBarWidth=20;  // width on latest ver of chrome - need to find a way to calc this value for each browser
 
 
@@ -420,6 +477,7 @@ var methods=
           gridHTML +=         '</tr>';
           gridHTML +=       '</thead>';
           gridHTML +=       '<tbody>';
+          gridHTML +=         '<tr class="cellMeasure"><td>&nbsp;</td></tr>';
           gridHTML +=       '</tbody>';
           gridHTML +=     '</table>';
           gridHTML +=   '</div>';
@@ -431,21 +489,25 @@ var methods=
 
         Grid.replaceWith(gridHTML);
 
-        Grid=$("#"+this.id);
+        Grid=$("#"+gridID); // "Grid" points to the original and, now deleted grid/table DOM jquery object;
+                            //         wrap the new one and continue...
+
         Grid.data("cols",cols);
         Grid.data("settings",settings);
-        Grid.data("rowHeight",-1);
+        Grid.data("dataRowMetrics",null);
 
-        var FullGrid=$("#"+BaseID+"div-table-wrapper");
+        var FullGrid=$("#"+BaseID+"div-table-wrapper"); // "Grid" always points to the actual <table> that holds the
+                                                        //    the actual data;  "FullGrid" points to the outermost parent
+                                                        //    wrapper <div>;  essentially, the whole smash...
 
         var bodyDiv=FullGrid.find(".ui-jqmGrid-div-table-body");
         bodyDiv.on("scroll", function(event)
           {
           var scrollElement=$(event.target);
-          ScrollGrid(scrollElement,
-                     event.target.scrollHeight,
-                     scrollElement.scrollTop()
-                    );
+          gridScrolled(scrollElement,
+                       event.target.scrollHeight,
+                       scrollElement.scrollTop()
+                       );
           });
 
 
@@ -480,28 +542,15 @@ var methods=
           }
       });
     },
-  setData: function(gridData)
+  setDataPump: function(dataPump)
     {
-    if((typeof gridData==="undefined")||(!(gridData instanceof Array))) return;
+    if((typeof dataPump==="undefined")||(!(dataPump instanceof Object))) return;
 
     return this.each(function()
       {
       var Grid=$(this);
-      var sortedCol=Grid.data("sortedCol");
-      //if((typeof sortedCol==="undefined")||(!sortedCol))
-      if(!sortedCol)
-        {
-        Grid.data("sortedCol",null);
-        var gridRowOrder=[];
-        for(var ro=0;ro<gridData.length;ro++)
-          { gridRowOrder[ro]=ro; }
-        installData(Grid, gridData, gridRowOrder);
-        }
-      else
-        {
-        Grid.data("gridData",gridData);
-        gridColSort(Grid,sortedCol)
-        }
+      Grid.data("dataPump", dataPump);
+      gridSiphonData(Grid);
       });
     }
   };
