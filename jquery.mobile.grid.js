@@ -21,9 +21,9 @@ else if(sortedCol.index!=col.index)
 col.ascend=(!col.ascend);
 
 var dataPump=Grid.data("dataPump");
-dataPump.sortColumn(this,col);
+dataPump.sortColumn(Grid,col);
 //installData(this, dataPump.gridData, dataPump.gridRowOrder)
-gridSiphonData(this);
+gridSiphonData(Grid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ var dataRowCount=dataPump.gridData.length;
 
 for(var r=0;r<dataRowCount;r++)
   {
-  var rowHTML='<tr class="newRow ui-body-'+rowTheme+'">';
+  var rowHTML='<tr class="ui-body-'+rowTheme+'">';
 
   //rowData=gridData[r];
   rowData=dataPump.rowData(r);
@@ -168,14 +168,8 @@ for(var r=0;r<dataRowCount;r++)
   }
 dataRows.append(dataHTML);
 
-dataRows=Grid.find("tbody tr.newRow");
-dataRows.removeClass("newRow");
-
-var BHv="ui-btn-hover-"+settings.dataRowHoverTheme;
-var BUp="ui-body-"+settings.dataRowTheme;
-dataRows.hover(function(){$(this).addClass(BHv).removeClass(BUp);},
-               function(){$(this).removeClass(BHv).addClass(BUp);});
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -211,7 +205,8 @@ for(var ro=0;ro<this.gridData.length;ro++)
 function LocalDataSetDataPump_rowData(rowIndex)
 
 {
-return((rowIndex<this.gridData.length)?this.gridData[rowIndex]:new Object);
+//return((rowIndex<this.gridData.length)?this.gridData[rowIndex]:new Object);
+return((rowIndex<this.gridData.length)?this.gridData[this.gridRowOrder[rowIndex]]:new Object);
 }
 
 function LocalDataSetDataPump_sortColumn(Grid,col)
@@ -282,6 +277,9 @@ else
     }
   }
 
+
+var dataRows=Grid.find("tbody");
+dataRows.empty();
 this.resetRowOrder();
 
 var r1,r2,ri1,ri2,rd1,rd2,swap;
@@ -448,7 +446,7 @@ var methods=
           /*
 
           ui-jqmGrid-table-background should be added to the <th> of the "bodyHeader" when the grid is empty (no rows)
-                and removed when there is a lease 1 row.
+                and removed when there is a least 1 row.
 
           */
 
@@ -516,14 +514,27 @@ var methods=
         var BHv="ui-btn-hover-"+settings.headerTheme;
         var BUp="ui-btn-up-"+settings.headerTheme;
         var BDn="ui-btn-down-"+settings.headerTheme;
+        
+        // call sort on column cell click
+        colRowCells.on("click.jqmGrid",function(){ gridColClick(Grid, cols, $(this).attr("id"));});
 
-        colRowCells.on("click",function(){ gridColClick(Grid, cols, $(this).attr("id"));});
-
+        // make the column cells look/work like a button (hover and click)
         colRowCells.hover(function(){$(this).addClass(BHv).removeClass(BUp);},
                           function(){$(this).removeClass(BHv).addClass(BUp);});
 
         colRowCells.mousedown(function(){$(this).addClass(BDn).removeClass(BUp);});
         colRowCells.mouseup  (function(){$(this).removeClass(BDn).addClass(BUp);});
+        
+        
+        // highlight the data rows on hover......
+        var BHvD="ui-btn-hover-"+settings.dataRowHoverTheme;
+        var BUpD="ui-body-"+settings.dataRowTheme;
+        Grid.on({
+                "mouseover.jqmGrid":function(){$(this).addClass(BHvD).removeClass(BUpD);},
+                "mouseout.jqmGrid": function(){$(this).removeClass(BHvD).addClass(BUpD);}
+                },
+                "tbody tr");       
+    
         });
 
     },
@@ -576,10 +587,11 @@ var methods=
 
 ///////////////////////////////////
 
-function pullAttr(Grid,attr)
+function pullAttr(Grid,attrName)
 
 {
-var v=$(Grid).attr(attr);
+var v=$(Grid).attr(attrName);
+//var v=$(Grid).prop(attrName);
 if(typeof v==="undefined")
   {
 v=-1;
