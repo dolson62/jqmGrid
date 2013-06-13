@@ -317,17 +317,7 @@ var methods=
   {
   init: function(options)
     {
-    var settings = $.extend(
-          {
-          'headerTheme'       : 'b',
-          'dataRowTheme'      : 'd',
-          'dataRowHoverTheme' : 'e',
-          'width'             : -1,
-          'height'            : -1,
-          'minHeight'         : -1,
-          'maxHeight'         : -1,
-          'columns'           : []
-          }, options);
+    var settings = $.extend({}, $.fn.jqmGrid.defaultOptions, options);
 
     return this.each(function()
         {
@@ -499,7 +489,7 @@ var methods=
                                                         //    wrapper <div>;  essentially, the whole smash...
 
         var bodyDiv=FullGrid.find(".ui-jqmGrid-div-table-body");
-        bodyDiv.on("scroll", function(event)
+        bodyDiv.on("scroll.jqmGrid", function(event)
           {
           var scrollElement=$(event.target);
           gridScrolled(scrollElement,
@@ -553,20 +543,27 @@ var methods=
           }
       });
     },
-  setDataPump: function(dataPump)
+  dataPump: function(dataPump)
     {
-    if((typeof dataPump==="undefined")||(!(dataPump instanceof Object))) return;
-
-    return this.each(function()
+    if (arguments.length === 0) 
       {
-      var Grid=$(this);
-      Grid.data("dataPump", dataPump);
-      gridSiphonData(Grid);
-      });
+      return this.get(0).data("dataPump");
+      }
+    else
+      {
+      if((typeof dataPump==="undefined")||(!(dataPump instanceof Object))) return;
+
+      return this.each(function()
+        {
+        var Grid=$(this);
+        Grid.data("dataPump", dataPump);
+        gridSiphonData(Grid);
+        });
+      }  
     }
   };
 
-  $.fn.jqmGrid=
+  $.fn.jqmGrid =
     function(method)
     {
     if(methods[method])
@@ -583,7 +580,21 @@ var methods=
       }
     };
 
+$.fn.jqmGrid.defaultOptions =
+  {
+  'headerTheme'       : 'b',
+  'dataRowTheme'      : 'd',
+  'dataRowHoverTheme' : 'e',
+  'width'             : -1,
+  'height'            : -1,
+  'minHeight'         : -1,
+  'maxHeight'         : -1,
+  'columns'           : []
+  };
+
+
 })(jQuery);
+
 
 ///////////////////////////////////
 
