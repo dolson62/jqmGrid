@@ -728,7 +728,10 @@ $("table:jqmData(role='grid')").each(function()
     newGrid=$("#"+this.id);
     var initialData=extractInitialData(newGrid,Grid);
     if(initialData.length>0)
-      newGrid.jqmGrid("setData", initialData);
+      {
+      var dataPump=new LocalDataSetDataPump(initialData);
+      newGrid.jqmGrid("dataPump", dataPump);      
+      }
     }
   });
 }
