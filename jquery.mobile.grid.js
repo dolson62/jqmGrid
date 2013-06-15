@@ -167,7 +167,6 @@ for(var r=0;r<dataRowCount;r++)
   dataHTML += rowHTML+'</tr>';
   }
 dataRows.append(dataHTML);
-
 }
 
 
@@ -179,13 +178,13 @@ function LocalDataSetDataPump(localData)
 this.totalRows=LocalDataSetDataPump_getTotalRows;
 
 this.resetRowOrder=LocalDataSetDataPump_resetRowOrder;
+this.resetDataSet =LocalDataSetDataPump_resetDataSet;
 this.sortColumn   =LocalDataSetDataPump_sortColumn;
 this.rowData      =LocalDataSetDataPump_rowData;
 
 
 this.gridData=localData;
 this.resetRowOrder();
-
 }
 
 function LocalDataSetDataPump_getTotalRows()
@@ -207,6 +206,13 @@ function LocalDataSetDataPump_rowData(rowIndex)
 {
 //return((rowIndex<this.gridData.length)?this.gridData[rowIndex]:new Object);
 return((rowIndex<this.gridData.length)?this.gridData[this.gridRowOrder[rowIndex]]:new Object);
+}
+
+function LocalDataSetDataPump_resetDataSet(Grid)
+
+{
+Grid.find("tbody").empty();
+this.resetRowOrder();
 }
 
 function LocalDataSetDataPump_sortColumn(Grid,col)
@@ -277,10 +283,7 @@ else
     }
   }
 
-
-var dataRows=Grid.find("tbody");
-dataRows.empty();
-this.resetRowOrder();
+this.resetDataSet(Grid);
 
 var r1,r2,ri1,ri2,rd1,rd2,swap;
 
@@ -351,6 +354,8 @@ var methods=
 
         var gridHdrColsHTML="";
         var bodyHdrColsHTML="";
+        
+        var visibleColumnCount=0;
 
         for(var i=0;i<cols.length;i++)
           {
@@ -417,6 +422,9 @@ var methods=
             col['hidden']=false;
             }
 
+          if(!colHidden)
+            visibleColumnCount++;
+            
           colClass=(col.class!=""?col.class+" ":"");
           if(colHidden)
             {
@@ -465,7 +473,7 @@ var methods=
           gridHTML +=         '</tr>';
           gridHTML +=       '</thead>';
           gridHTML +=       '<tbody>';
-          gridHTML +=         '<tr class="cellMeasure"><td>&nbsp;</td></tr>';
+          gridHTML +=         '<tr class="cellMeasure ui-jqmGrid-table-background"><td colspan='+visibleColumnCount+'>&nbsp;</td></tr>';
           gridHTML +=       '</tbody>';
           gridHTML +=     '</table>';
           gridHTML +=   '</div>';
@@ -557,9 +565,23 @@ var methods=
         {
         var Grid=$(this);
         Grid.data("dataPump", dataPump);
+        dataPump.resetDataSet(Grid);
         gridSiphonData(Grid);
         });
       }  
+    },
+  dataSet: function(gridData)
+    {
+    if (arguments.length === 0) 
+      {
+      return this.get(0).data("dataPump").gridData;
+      }
+    else
+      {
+      if((typeof gridData==="undefined")||(!(gridData instanceof Object))) return;
+      
+      return this.jqmGrid("dataPump", new LocalDataSetDataPump(gridData) );
+      }
     }
   };
 

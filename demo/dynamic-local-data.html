@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+                                                                                                                                              <!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Cache-Control" content="no-cache, max-age=0, must-revalidate, no-store">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="expires" content="-1">
+
+
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+
+  <script type="text/javascript" src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+
+  <script type="text/javascript" src="/jQueryMobile/jqmGrid/jquery.mobile.grid.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="/jQueryMobile/jqmGrid/jquery.mobile.grid.css" />
+
+</head>
+
+
+<body>
+
+  <div data-role="page" id="page-jqmGrid" data-dom-cache="false">
+
+    <div data-role="header" id="header-jqmGrid">
+    <h3>jqmGrid Demo</h3>
+    </div>
+
+    <div data-role="content" id="content-jqmGrid">
+
+      <div data-role="collapsible-set" data-theme="c" data-content-theme="d">
+
+        <div data-role="collapsible" data-collapsed="false">
+
+        <script>
+
+          function DynamicTable1DataSet1()
+
+          {
+          var DataSet1=[
+                       {RowID: 1, PersonName:"Wilma Flintstone",   Street:"123 Gravel Street", City:"Bedrock", State:"NG", Zip: 12345},
+                       {RowID: 2, PersonName:"Betty Rubble",       Street:"456 Granite Ave",   City:"Bedrock", State:"NG", Zip: 12345},
+                       {RowID: 3, PersonName:"Peebles Flintstone", Street:"123 Gravel Street", City:"Bedrock", State:"NG", Zip: 12345}
+                       ];
+          $("#tableDynamic1").jqmGrid("dataSet",DataSet1);
+          }
+
+          function DynamicTable1DataSet2()
+
+          {
+          var DataSet2=[
+                       {RowID: 1, PersonName:"Fred Flintstone", Street:"123 Gravel Street", City:"Bedrock", State:"NG", Zip: 12345},
+                       {RowID: 2, PersonName:"Barney Rubble",   Street:"456 Granite Ave",   City:"Bedrock", State:"NG", Zip: 12345},
+                       {RowID: 3, PersonName:"BamBam Rubble",   Street:"456 Granite Ave",   City:"Bedrock", State:"NG", Zip: 12345}
+                       ];
+          $("#tableDynamic1").jqmGrid("dataSet",DataSet2);
+          }
+
+        </script>
+
+        <h3>Grid with simple, dynamic local data, restricted height</h3>
+
+          <table data-role="grid" id="tableDynamic1" height=150>
+
+            <thead><tr>
+              <th id="RowID"     data-hidden="true"          ></th>
+              <th id="PersonName"                   width=150>Name</th>
+              <th id="Street"                       width=300>Street Address</th>
+              <th id="City"                         width=125>City</th>
+              <th id="State"                        width=125>State</th>
+              <th id="Zip"                          width=125>Zip</th>
+            </tr></thead>
+
+          </table>
+
+          <button data-inline="true" data-mini="true" onClick="DynamicTable1DataSet1();">DataSet 1</button>
+          <button data-inline="true" data-mini="true" onClick="DynamicTable1DataSet2();">DataSet 2</button>
+        </div>
+
+
+        <div data-role="collapsible" data-collapsed="false">
+
+        <script>
+
+          function DynamicTable2DataSet1()
+
+          {
+          var DataSet1=[
+				 {
+				 RowID:      {value:1},
+				 PersonName: {value:"Wilma Flintstone"},
+				 Street:     {value:"123 Gravel Street"},
+				 City:       {value:"Bedrock"},
+				 State:      {value:"NG"},
+				 Zip:        {value:12345}
+				 },
+				 {RowID:     {value:2},
+				 PersonName: {value:"Betty Rubble"},
+				 Street:     {value:"456 Granite Ave"},
+				 City:       {value:"Bedrock"},
+				 State:      {value:"NG"},
+				 Zip:        {value:12345}
+				 },
+				 {
+				 RowID:      {value:3},
+				 PersonName: {value:"Peebles Flintstone"},
+				 Street:     {value:"123 Gravel Street"},
+				 City:       {value:"Bedrock"},
+				 State:      {value:"NG"},
+				 Zip:        {value:12345}
+				 }
+                       ];
+          $("#tableDynamic2").jqmGrid("dataSet",DataSet1);
+          }
+
+          function DynamicTable2DataSet2()
+
+          {
+          var DataSet2=[
+                 {
+                 RowID:      {value:1},
+                 PersonName: {value:"Fred Flintstone"},
+                 Street:     {value:"123 Gravel Street"},
+                 City:       {value:"Bedrock"},
+                 State:      {value:"NG"},
+                 Zip:        {value:12345}
+                 },
+                 {
+                 RowID:      {value:2},
+                 PersonName: {value:"Barney Rubble"},
+                 Street:     {value:"456 Granite Ave"},
+                 City:       {value:"Bedrock"},
+                 State:      {value:"NG"},
+                 Zip:        {value:12345}
+                 },
+                 {
+                 RowID:      {value:3},
+                 PersonName: {value:"BamBam Rubble"},
+                 Street:     {value:"456 Granite Ave"},
+                 City:       {value:"Bedrock"},
+                 State:      {value:"NG"},
+                 Zip:        {value:12345}
+                 }
+                       ];
+          $("#tableDynamic2").jqmGrid("dataSet",DataSet2);
+          }
+
+        </script>
+
+        <h3>Grid with dynamic local data, restricted height</h3>
+
+          <table data-role="grid" id="tableDynamic2" height=150>
+
+            <thead><tr>
+              <th id="RowID"     data-hidden="true"          ></th>
+              <th id="PersonName"                   width=150>Name</th>
+              <th id="Street"                       width=300>Street Address</th>
+              <th id="City"                         width=125>City</th>
+              <th id="State"                        width=125>State</th>
+              <th id="Zip"                          width=125>Zip</th>
+            </tr></thead>
+
+          </table>
+
+          <button data-inline="true" data-mini="true" onClick="DynamicTable2DataSet1();">DataSet 1</button>
+          <button data-inline="true" data-mini="true" onClick="DynamicTable2DataSet2();">DataSet 2</button>
+        </div>
+
+
+      </div>
+    </div>
+
+    <div data-role="footer" id="footer-jqmGrid" data-position="fixed">
+    <h3>&copy; 2013 by Olson Research Associates, Inc.</h3>
+    </div>
+
+  </div>
+
+</body>
+
+</html>
