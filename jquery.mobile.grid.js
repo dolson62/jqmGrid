@@ -22,7 +22,6 @@ col.ascend=(!col.ascend);
 
 var dataPump=Grid.data("dataPump");
 dataPump.sortColumn(Grid,col);
-//installData(this, dataPump.gridData, dataPump.gridRowOrder)
 gridSiphonData(Grid);
 }
 
@@ -52,33 +51,33 @@ if(!metrics)
 return(metrics);
 }
 
+function gridResetDataSet(Grid)
+
+{
+Grid.find("tbody").empty();
+Grid.data("dataPump").resetRowOrder();
+}
+
 
 function gridScrolled(divGridBody,scrollHeight,scrollTop)
 
 {
-
-
-          //var $elem = $(event.target), threshold = 100;
-
-          //if(event.target.scrollHeight - $elem.scrollTop() + threshold >= $elem.outerHeight())
-          //  { // Scrolled to bottom, load more data
-          //  }
-
-
 
 var Grid=divGridBody.find(".ui-jqmGrid-table");
 var gridMetrics=gridDataRowMetrics(Grid);
 
 if(gridMetrics.rowHeight==-1) return;
 
+var dataPump=Grid.data("dataPump");
+if(!dataPump.haveMoreData()) return;
+
 var topVisibleRow=Math.floor(scrollTop/gridMetrics.rowHeight);
-
-
-
-
-
+var lastVisibleRow=topVisibleRow+gridMetrics.rowsVisible;
+if(lastVisibleRow>=dataPump.rowIndex)
+  {
+  dataPump.nextPage(Grid,lastVisibleRow,gridMetrics);
+  }
 }
-
 
 
 function gridSiphonData(Grid)
@@ -99,20 +98,23 @@ var dataHTML="";
 var gridMetrics=gridDataRowMetrics(Grid);
 
 
-//
-//
-//
-var dataRowCount=dataPump.gridData.length;
-//
-//
-//
-
-for(var r=0;r<dataRowCount;r++)
+while(rowData=dataPump.nextRow())
   {
-  var rowHTML='<tr class="ui-body-'+rowTheme+'">';
 
-  //rowData=gridData[r];
-  rowData=dataPump.rowData(r);
+  var rowClass="",rowStyle="";
+  if(rowData.hasOwnProperty("row"))
+    {
+    cellDef=rowData["row"];
+    if(typeof cellDef==="object")
+      {
+      if(cellDef.hasOwnProperty("style"))
+        rowStyle+=cellDef.style;
+      if(cellDef.hasOwnProperty("class"))
+        rowClass+=(" "+cellDef.class);
+      }
+    }
+
+  var rowHTML='<tr class="'+(rowClass==""?'ui-body-'+rowTheme:rowClass)+'"'+(rowStyle==""?'':' style="'+rowStyle+'"')+'>';
 
   if(typeof rowData!=="object")
      rowData=new Object;
@@ -181,6 +183,9 @@ this.resetRowOrder=LocalDataSetDataPump_resetRowOrder;
 this.resetDataSet =LocalDataSetDataPump_resetDataSet;
 this.sortColumn   =LocalDataSetDataPump_sortColumn;
 this.rowData      =LocalDataSetDataPump_rowData;
+this.haveMoreData =LocalDataSetDataPump_haveMoreData;
+this.nextRow      =LocalDataSetDataPump_nextRow;
+this.nextPage     =LocalDataSetDataPump_nextPage;
 
 
 this.gridData=localData;
@@ -190,12 +195,20 @@ this.resetRowOrder();
 function LocalDataSetDataPump_getTotalRows()
 
 {
-return(gridData.length);
+return(this.gridData.length);
 }
 
 function LocalDataSetDataPump_resetRowOrder()
 
 {
+this.rowIndex=0;
+
+//
+//
+this.pagemax=10;
+//
+//
+
 this.gridRowOrder=[];
 for(var ro=0;ro<this.gridData.length;ro++)
   { this.gridRowOrder[ro]=ro; }
@@ -204,8 +217,37 @@ for(var ro=0;ro<this.gridData.length;ro++)
 function LocalDataSetDataPump_rowData(rowIndex)
 
 {
-//return((rowIndex<this.gridData.length)?this.gridData[rowIndex]:new Object);
 return((rowIndex<this.gridData.length)?this.gridData[this.gridRowOrder[rowIndex]]:new Object);
+}
+
+function LocalDataSetDataPump_haveMoreData()
+
+{
+return(this.rowIndex<this.gridData.length);
+}
+
+function LocalDataSetDataPump_nextPage(Grid,triggerRow,metrics)
+
+{
+$("#datapumpmsg").html("loading"+triggerRow);
+
+this.pagemax=this.gridData.length;
+setTimeout(function(){ sd(Grid); },3000);
+}
+
+function sd(Grid)
+
+{
+gridSiphonData(Grid);
+$("#datapumpmsg").html("idle");
+}
+
+
+function LocalDataSetDataPump_nextRow()
+
+{
+//return(this.rowIndex<this.gridData.length?this.rowData(this.rowIndex++):null);
+return(this.rowIndex<this.pagemax?this.rowData(this.rowIndex++):null);
 }
 
 function LocalDataSetDataPump_resetDataSet(Grid)
@@ -565,7 +607,7 @@ var methods=
         {
         var Grid=$(this);
         Grid.data("dataPump", dataPump);
-        dataPump.resetDataSet(Grid);
+        gridResetDataSet(Grid);
         gridSiphonData(Grid);
         });
       }  
