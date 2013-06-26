@@ -51,12 +51,19 @@ if(!metrics)
 return(metrics);
 }
 
-function gridResetDataSet(Grid)
+function gridEmptyDataRows(Grid)
 
 {
 Grid.find("tbody").empty();
-Grid.data("dataPump").resetRowOrder();
 }
+
+function gridResetDataSet(Grid)
+
+{
+gridEmptyDataRows(Grid);
+Grid.data("dataPump").resetDataSet(Grid);
+}
+
 
 
 function gridScrolled(divGridBody,scrollHeight,scrollTop)
@@ -73,7 +80,8 @@ if(!dataPump.haveMoreData()) return;
 
 var topVisibleRow=Math.floor(scrollTop/gridMetrics.rowHeight);
 var lastVisibleRow=topVisibleRow+gridMetrics.rowsVisible;
-if(lastVisibleRow>=dataPump.rowIndex)
+//if(lastVisibleRow>=dataPump.rowIndex)
+if(lastVisibleRow>=dataPump.highestRowIndex())
   {
   dataPump.nextPage(Grid,lastVisibleRow,gridMetrics);
   }
@@ -177,25 +185,33 @@ dataRows.append(dataHTML);
 function LocalDataSetDataPump(localData)
 
 {
-this.totalRows=LocalDataSetDataPump_getTotalRows;
+this.totalRows      =LocalDataSetDataPump_getTotalRows;
+this.highestRowIndex=LocalDataSetDataPump_getHighestRowIndex;
+this.resetDataSet   =LocalDataSetDataPump_resetDataSet;
+this.sortColumn     =LocalDataSetDataPump_sortColumn;
+this.rowData        =LocalDataSetDataPump_rowData;
+this.haveMoreData   =LocalDataSetDataPump_haveMoreData;
+this.nextRow        =LocalDataSetDataPump_nextRow;
+this.nextPage       =LocalDataSetDataPump_nextPage;
 
+
+//internal
 this.resetRowOrder=LocalDataSetDataPump_resetRowOrder;
-this.resetDataSet =LocalDataSetDataPump_resetDataSet;
-this.sortColumn   =LocalDataSetDataPump_sortColumn;
-this.rowData      =LocalDataSetDataPump_rowData;
-this.haveMoreData =LocalDataSetDataPump_haveMoreData;
-this.nextRow      =LocalDataSetDataPump_nextRow;
-this.nextPage     =LocalDataSetDataPump_nextPage;
 
 
 this.gridData=localData;
-this.resetRowOrder();
 }
 
 function LocalDataSetDataPump_getTotalRows()
 
 {
 return(this.gridData.length);
+}
+
+function LocalDataSetDataPump_getHighestRowIndex()
+
+{
+return(this.rowIndex);
 }
 
 function LocalDataSetDataPump_resetRowOrder()
@@ -231,15 +247,16 @@ function LocalDataSetDataPump_nextPage(Grid,triggerRow,metrics)
 {
 $("#datapumpmsg").html("loading"+triggerRow);
 
-this.pagemax=this.gridData.length;
-setTimeout(function(){ sd(Grid); },3000);
+var pump=this;
+setTimeout(function(){ sd(pump,Grid); },3000);
 }
 
-function sd(Grid)
+function sd(pump,Grid)
 
 {
 gridSiphonData(Grid);
 $("#datapumpmsg").html("idle");
+pump.pagemax=pump.gridData.length;
 }
 
 
@@ -253,8 +270,8 @@ return(this.rowIndex<this.pagemax?this.rowData(this.rowIndex++):null);
 function LocalDataSetDataPump_resetDataSet(Grid)
 
 {
-Grid.find("tbody").empty();
 this.resetRowOrder();
+this.nextPage(Grid,0,null);
 }
 
 function LocalDataSetDataPump_sortColumn(Grid,col)
@@ -325,7 +342,8 @@ else
     }
   }
 
-this.resetDataSet(Grid);
+gridEmptyDataRows(Grid);
+this.resetRowOrder();
 
 var r1,r2,ri1,ri2,rd1,rd2,swap;
 
@@ -608,7 +626,6 @@ var methods=
         var Grid=$(this);
         Grid.data("dataPump", dataPump);
         gridResetDataSet(Grid);
-        gridSiphonData(Grid);
         });
       }  
     },
