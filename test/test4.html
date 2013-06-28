@@ -51,39 +51,7 @@ catch(e)
 function x()
 
 {
-var tp=7;
-var rpp=20;
-var TestData=[];
-
-var i=0;
-for(var p=0;p<tp;p++)
-  {
-  TestData[p]=
-    {
-    totalPages:7,
-    totalRows:140,
-    rowsPerPage:20,
-    pageIndex:p,
-    pageRows:20,
-    rows:[]
-    };
-  for(var r=0;r<TestData[p].rowsPerPage;r++)
-    {
-    TestData[p].rows[r]=
-      {
-      RowID:     {value:i},
-      TeamID:    {value:"ti-"+i},
-      TeamName:  {value:"tn-"+i},
-      Yield:     {value:1+i},
-      Cost:      {value:2+i},
-      Margin:    {value:3+i}
-      };
-    i++;
-    }
-  var xxx=JSON.stringify(TestData[p]);
-  }
-
-var dataPump=new LocalPagedDataSetDataPump(TestData);
+var dataPump=new AJAXPagedDataSetDataPump("/jQueryMobile/jqmGrid/test/Test4Data/page");
 $("#tableYieldCostMargin").jqmGrid("dataPump", dataPump);
 }
 
@@ -95,7 +63,7 @@ x();
 
 
 
-function LocalPagedDataSetDataPump(localDataPages)
+function AJAXPagedDataSetDataPump(dataPagesMask)
 
 {
 this.totalRows      =LocalPagedDataSetDataPump_getTotalRows;
@@ -111,7 +79,7 @@ this.nextPage       =LocalPagedDataSetDataPump_nextPage;
 this.finishNextPage =LocalPagedDataSetDataPump_finishNextPage;
 
 
-this.gridDataPages=localDataPages;
+this.gridDataPagesMask=dataPagesMask;
 }
 
 
@@ -146,7 +114,8 @@ function LocalPagedDataSetDataPump_sortColumn()
 function LocalPagedDataSetDataPump_rowData(rowIndex,rowPageIndex,pageIndex)
 
 {
-return(this.gridDataPages[pageIndex].rows[rowPageIndex])
+//return(this.gridDataPages[pageIndex].rows[rowPageIndex])
+return(this.currentPage.rows[rowPageIndex]);
 }
 
 function LocalPagedDataSetDataPump_haveMoreData()
@@ -173,20 +142,23 @@ if((this.totalPages!=-1)&&(this.pageIndex>=this.totalPages)) return(false);
 $("#datapumpmsg").html("loading"+triggerRow);
 
 var pump=this;
-setTimeout(function(){ pump.finishNextPage(Grid); },1000);
+//setTimeout(function(){ pump.finishNextPage(Grid); },1000);
+
+$.getJSON(this.gridDataPagesMask+this.pageIndex+".js", function(data) { pump.finishNextPage(Grid,data); } );
 }
 
-function LocalPagedDataSetDataPump_finishNextPage(Grid)
+function LocalPagedDataSetDataPump_finishNextPage(Grid,pageJSON)
 
 {
+this.currentPage=pageJSON;
 this.pageRows=0;
 this.pageRowIndex=0;
-if(this.pageIndex < this.gridDataPages.length)
+if(this.pageIndex < this.currentPage.totalPages)
   {
-  var page=this.gridDataPages[this.pageIndex];
-  this.totalPages = this.gridDataPages.length;
-  this.rowsTotal  = page.totalRows;
-  this.pageRows   = page.rows.length;
+  //var page=this.gridDataPages[this.pageIndex];
+  this.totalPages = this.currentPage.totalPages;
+  this.rowsTotal  = this.currentPage.totalRows;
+  this.pageRows   = this.currentPage.rows.length;
   }
 else
   this.totalPages=0;
