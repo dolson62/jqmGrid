@@ -25,6 +25,16 @@ dataPump.sortColumn(Grid,col);
 gridSiphonData(Grid);
 }
 
+function gridLoadingMessage(Grid,method)
+
+{
+var msg=$("#"+Grid.attr("id")+"-div-loading-msg");
+if(method=="show")
+  msg.show()
+else
+  msg.hide();
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 function gridDataRowMetrics(Grid)
@@ -64,12 +74,9 @@ gridEmptyDataRows(Grid);
 Grid.data("dataPump").resetDataSet(Grid);
 }
 
-
-
 function gridScrolled(divGridBody,scrollHeight,scrollTop)
 
 {
-
 var Grid=divGridBody.find(".ui-jqmGrid-table");
 var gridMetrics=gridDataRowMetrics(Grid);
 
@@ -98,7 +105,6 @@ var dataPump=Grid.data("dataPump");
 
 var dataRows=Grid.find("tbody");
 
-
 var col,cellStyle,cellData,cellDef,cellClass,format;
 var rowTheme=settings.dataRowTheme;
 var rowData;
@@ -108,7 +114,6 @@ var gridMetrics=gridDataRowMetrics(Grid);
 
 while(rowData=dataPump.nextRow())
   {
-
   var rowClass="",rowStyle="";
   if(rowData.hasOwnProperty("row"))
     {
@@ -245,7 +250,7 @@ return(this.rowIndex<this.gridData.length);
 function LocalDataSetDataPump_nextPage(Grid,triggerRow,metrics)
 
 {
-$("#datapumpmsg").html("loading"+triggerRow);
+gridLoadingMessage(Grid,"show");
 
 var pump=this;
 setTimeout(function(){ sd(pump,Grid); },3000);
@@ -255,7 +260,7 @@ function sd(pump,Grid)
 
 {
 gridSiphonData(Grid);
-$("#datapumpmsg").html("idle");
+gridLoadingMessage(Grid,"hide");
 pump.pagemax=pump.gridData.length;
 }
 
@@ -514,8 +519,14 @@ var methods=
 
         var
           gridHTML =  '<div id="'+BaseID+'div-table-wrapper" class="ui-jqmGrid-div-table-wrapper"'+(divFullStyle==''?'':' style="'+divFullStyle+'"')+'>';
-
+          gridHTML +=   '<div id="'+BaseID+'div-loading-msg" class="ui-jqmGrid-div-table-loading-data-msg">';
+          gridHTML +=     '<div id="'+BaseID+'div-loading-msg-inner" class="ui-jqmGrid-div-table-loading-data-msg-inner">Loading...';
+          gridHTML +=     '</div>';
+          gridHTML +=  '</div>';
           gridHTML +=   '<div id="'+BaseID+'div-table-header" class="ui-jqmGrid-div-table-header">';
+          
+
+          
           gridHTML +=     '<table id="'+BaseID+'table-header" class="ui-jqmGrid-table-header">';
           gridHTML +=       '<thead>';
           gridHTML +=         '<tr class="'+BC+'">';

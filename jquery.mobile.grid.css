@@ -7,6 +7,26 @@ position:relative;
 float:left;
 }
 
+.ui-jqmGrid-div-table-loading-data-msg
+{
+display:none;
+position:absolute;
+opacity:0.25;
+border-radius:6px;
+background:silver;
+width:100%;
+height:100%;
+}
+
+.ui-jqmGrid-div-table-loading-data-msg-inner
+{
+text-shadow:none;
+text-align:center;
+margin-top:50px;
+font-weight:700;
+opacity:1;
+}
+
 .ui-jqmGrid-div-table-header
 {
 padding:0;

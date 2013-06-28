@@ -46,8 +46,6 @@ catch(e)
   }
 }
 
-
-
 function x()
 
 {
@@ -77,7 +75,7 @@ this.nextPage       =LocalPagedDataSetDataPump_nextPage;
 
 //internal
 this.finishNextPage =LocalPagedDataSetDataPump_finishNextPage;
-
+this.delayTest      =LocalPagedDataSetDataPump_delayTest;
 
 this.gridDataPagesMask=dataPagesMask;
 }
@@ -139,11 +137,20 @@ this.paging=true;
 this.pageIndex++;
 if((this.totalPages!=-1)&&(this.pageIndex>=this.totalPages)) return(false);
 
-$("#datapumpmsg").html("loading"+triggerRow);
+gridLoadingMessage(Grid,"show");
 
 var pump=this;
-//setTimeout(function(){ pump.finishNextPage(Grid); },1000);
+//$.getJSON(this.gridDataPagesMask+this.pageIndex+".js", function(data) { pump.finishNextPage(Grid,data); } );
 
+setTimeout(function(){ pump.delayTest(Grid); },3000);
+//setTimeout(function(){ pump.delayTest(Grid); },30);
+
+}
+
+function LocalPagedDataSetDataPump_delayTest(Grid)
+
+{
+var pump=this;
 $.getJSON(this.gridDataPagesMask+this.pageIndex+".js", function(data) { pump.finishNextPage(Grid,data); } );
 }
 
@@ -164,7 +171,8 @@ else
   this.totalPages=0;
 
 gridSiphonData(Grid);
-$("#datapumpmsg").html("idle");
+gridLoadingMessage(Grid,"hide");
+
 this.paging=false;
 }
 
@@ -182,8 +190,6 @@ this.paging=false;
   </div>
 
   <div data-role="content" id="contentTestGrid">
-
-<div id="datapumpmsg" style="height:30px;width:200px;background:yellow;padding:5px;margin-bottom:5px;border:1px;"></div>
 
 
 <table data-role="grid" id="tableYieldCostMargin" height=150>
