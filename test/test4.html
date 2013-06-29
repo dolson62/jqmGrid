@@ -64,36 +64,36 @@ x();
 function AJAXPagedDataSetDataPump(dataPagesMask)
 
 {
-this.totalRows      =LocalPagedDataSetDataPump_getTotalRows;
-this.highestRowIndex=LocalPagedDataSetDataPump_getHighestRowIndex;
-this.resetDataSet   =LocalPagedDataSetDataPump_resetDataSet;
-this.sortColumn     =LocalPagedDataSetDataPump_sortColumn;
-this.rowData        =LocalPagedDataSetDataPump_rowData;
-this.haveMoreData   =LocalPagedDataSetDataPump_haveMoreData;
-this.nextRow        =LocalPagedDataSetDataPump_nextRow;
-this.nextPage       =LocalPagedDataSetDataPump_nextPage;
+this.totalRows      =AJAXPagedDataSetDataPump_getTotalRows;
+this.highestRowIndex=AJAXPagedDataSetDataPump_getHighestRowIndex;
+this.resetDataSet   =AJAXPagedDataSetDataPump_resetDataSet;
+this.sortColumn     =AJAXPagedDataSetDataPump_sortColumn;
+this.rowData        =AJAXPagedDataSetDataPump_rowData;
+this.haveMoreData   =AJAXPagedDataSetDataPump_haveMoreData;
+this.nextRow        =AJAXPagedDataSetDataPump_nextRow;
+this.nextPage       =AJAXPagedDataSetDataPump_nextPage;
 
 //internal
-this.finishNextPage =LocalPagedDataSetDataPump_finishNextPage;
-this.delayTest      =LocalPagedDataSetDataPump_delayTest;
+this.finishNextPage =AJAXPagedDataSetDataPump_finishNextPage;
+this.delayTest      =AJAXPagedDataSetDataPump_delayTest;
 
 this.gridDataPagesMask=dataPagesMask;
 }
 
 
-function LocalPagedDataSetDataPump_getTotalRows()
+function AJAXPagedDataSetDataPump_getTotalRows()
 
 {
 return(this.rowsTotal);
 }
 
-function LocalPagedDataSetDataPump_getHighestRowIndex()
+function AJAXPagedDataSetDataPump_getHighestRowIndex()
 
 {
 return(this.rowIndex);
 }
 
-function LocalPagedDataSetDataPump_resetDataSet(Grid)
+function AJAXPagedDataSetDataPump_resetDataSet(Grid)
 
 {
 this.paging=false;
@@ -104,31 +104,31 @@ this.rowIndex=0;
 this.nextPage(Grid,0,null);
 }
 
-function LocalPagedDataSetDataPump_sortColumn()
+function AJAXPagedDataSetDataPump_sortColumn()
 
 {
 }
 
-function LocalPagedDataSetDataPump_rowData(rowIndex,rowPageIndex,pageIndex)
+function AJAXPagedDataSetDataPump_rowData(rowIndex,rowPageIndex,pageIndex)
 
 {
 //return(this.gridDataPages[pageIndex].rows[rowPageIndex])
 return(this.currentPage.rows[rowPageIndex]);
 }
 
-function LocalPagedDataSetDataPump_haveMoreData()
+function AJAXPagedDataSetDataPump_haveMoreData()
 
 {
 return(this.rowIndex<this.totalRows());
 }
 
-function LocalPagedDataSetDataPump_nextRow()
+function AJAXPagedDataSetDataPump_nextRow()
 
 {
 return(this.pageRowIndex<this.pageRows?this.rowData(this.rowIndex++,this.pageRowIndex++,this.pageIndex):null);
 }
 
-function LocalPagedDataSetDataPump_nextPage(Grid,triggerRow,metrics)
+function AJAXPagedDataSetDataPump_nextPage(Grid,triggerRow,metrics)
 
 {
 if(this.paging)return;
@@ -147,14 +147,14 @@ setTimeout(function(){ pump.delayTest(Grid); },3000);
 
 }
 
-function LocalPagedDataSetDataPump_delayTest(Grid)
+function AJAXPagedDataSetDataPump_delayTest(Grid)
 
 {
 var pump=this;
 $.getJSON(this.gridDataPagesMask+this.pageIndex+".js", function(data) { pump.finishNextPage(Grid,data); } );
 }
 
-function LocalPagedDataSetDataPump_finishNextPage(Grid,pageJSON)
+function AJAXPagedDataSetDataPump_finishNextPage(Grid,pageJSON)
 
 {
 this.currentPage=pageJSON;
