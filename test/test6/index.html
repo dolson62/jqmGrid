@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+                                                                                                                                              <!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="WebPortalz Computed HTML Producer">
+<meta http-equiv="Cache-Control" content="no-cache, max-age=0, must-revalidate, no-store">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="expires" content="-1">
+
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.0.min.js"></script>
+<!--  <scr ipt type="text/javascript" src="/jQuery/jquery-1.9.0.min.js"></scr ipt>  -->
+
+<script type="text/javascript" src="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="http://code.jquery.com/mobile/1.3.1/jquery.mobile-1.3.1.min.css" />
+<!--  <scr ipt type="text/javascript" src="/jQueryMobile/jquery.mobile-1.3.1.min.js"></scr ipt> -->
+<!--  <li nk rel="stylesheet" type="text/css" media="screen" href="/jQueryMobile/jquery.mobile-1.3.1.min.css" /> -->
+
+<script type="text/javascript" src="/jSON/1.0/json2.min.js"></script>
+<script type="text/javascript" src="/jQueryMobile/jqmGrid/jquery.mobile.grid.js"></script>
+<link rel="stylesheet" type="text/css" media="screen" href="/jQueryMobile/jqmGrid/jquery.mobile.grid.css" />
+
+
+<style>
+
+
+
+</style>
+
+
+<script>
+
+function FormatNumber(N,DecPlcs)
+{
+try
+  {
+  var s=N.toFixed(DecPlcs);
+  return(DecPlcs < 4?s.replace(/\B(?=(\d{3})+(?!\d))/g, ","):s);
+  }
+catch(e)
+  {
+  return("");
+  }
+}
+
+function x()
+
+{
+var dataPump=new AJAXPagedDataSetDataPump("datapump.php");
+$("#tableYieldCostMargin").jqmGrid("dataPump", dataPump);
+}
+
+
+$(document).on("pageinit",function()
+{
+x();
+});
+
+
+
+function AJAXPagedDataSetDataPump(dataPagesURL)
+
+{
+this.totalRows      =AJAXPagedDataSetDataPump_getTotalRows;
+this.highestRowIndex=AJAXPagedDataSetDataPump_getHighestRowIndex;
+this.resetDataSet   =AJAXPagedDataSetDataPump_resetDataSet;
+this.sortColumn     =AJAXPagedDataSetDataPump_sortColumn;
+this.rowData        =AJAXPagedDataSetDataPump_rowData;
+this.haveMoreData   =AJAXPagedDataSetDataPump_haveMoreData;
+this.nextRow        =AJAXPagedDataSetDataPump_nextRow;
+this.nextPage       =AJAXPagedDataSetDataPump_nextPage;
+
+//internal
+this.finishNextPage =AJAXPagedDataSetDataPump_finishNextPage;
+this.delayTest      =AJAXPagedDataSetDataPump_delayTest;
+
+this.gridDataPagesURL=dataPagesURL;
+}
+
+
+function AJAXPagedDataSetDataPump_getTotalRows()
+
+{
+return(this.rowsTotal);
+}
+
+function AJAXPagedDataSetDataPump_getHighestRowIndex()
+
+{
+return(this.rowIndex);
+}
+
+function AJAXPagedDataSetDataPump_resetDataSet(Grid)
+
+{
+this.paging=false;
+this.totalPages=-1;
+this.pageIndex=-1;
+this.rowsTotal=0;
+this.rowIndex=0;
+this.nextPage(Grid,0,null);
+}
+
+function AJAXPagedDataSetDataPump_sortColumn()
+
+{
+}
+
+function AJAXPagedDataSetDataPump_rowData(rowIndex,rowPageIndex,pageIndex)
+
+{
+return(this.currentPage.rows[rowPageIndex]);
+}
+
+function AJAXPagedDataSetDataPump_haveMoreData()
+
+{
+return(this.rowIndex<this.totalRows());
+}
+
+function AJAXPagedDataSetDataPump_nextRow()
+
+{
+return(this.pageRowIndex<this.pageRows?this.rowData(this.rowIndex++,this.pageRowIndex++,this.pageIndex):null);
+}
+
+function AJAXPagedDataSetDataPump_nextPage(Grid,triggerRow,metrics)
+
+{
+if(this.paging)return;
+this.paging=true;
+
+this.pageIndex++;
+if((this.totalPages!=-1)&&(this.pageIndex>=this.totalPages)) return(false);
+
+gridLoadingMessage(Grid,"show");
+
+var pump=this;
+$.getJSON(this.gridDataPagesURL+"?page="+this.pageIndex)
+   .done(function(data){pump.finishNextPage(Grid,data);})
+   .fail(function(jqxhr, textStatus, error){anerror(jqxhr, textStatus, error);});
+//setTimeout(function(){ pump.delayTest(Grid); },3000);
+//setTimeout(function(){ pump.delayTest(Grid); },30);
+
+}
+
+function AJAXPagedDataSetDataPump_delayTest(Grid)
+
+{
+var pump=this;
+$.getJSON(this.gridDataPagesURL+"?page="+this.pageIndex)
+   .done(function(data){pump.finishNextPage(Grid,data);})
+   .fail(function(jqxhr, textStatus, error){anerror(jqxhr, textStatus, error);});
+}
+
+function anerror(jqxhr, textStatus, error)
+
+{
+alert("fail: "+textStatus + ', ' + error);
+}
+
+function AJAXPagedDataSetDataPump_finishNextPage(Grid,pageJSON)
+
+{
+this.currentPage=pageJSON;
+this.pageRows=0;
+this.pageRowIndex=0;
+if(this.pageIndex < this.currentPage.totalPages)
+  {
+  this.totalPages = this.currentPage.totalPages;
+  this.rowsTotal  = this.currentPage.totalRows;
+  this.pageRows   = this.currentPage.rows.length;
+  }
+else
+  this.totalPages=0;
+
+gridSiphonData(Grid);
+gridLoadingMessage(Grid,"hide");
+
+this.paging=false;
+}
+
+</script>
+
+</head>
+
+
+<body>
+
+<div data-role="page" id="pageTestGrid" data-dom-cache="false">
+
+  <div data-role="header" id="headerTestGrid">
+  <h3>jqmGrid Test Page</h3>
+  </div>
+
+  <div data-role="content" id="contentTestGrid">
+
+
+<table data-role="grid" id="tableYieldCostMargin" height=150>
+  <thead><tr>
+    <th id="RowID"    data-hidden="true"              ></th>
+    <th id="TeamID"   data-hidden="false" width=70    >Team #</th>
+    <th id="TeamName"                     width=300   >Bank Name</th>
+    <th id="Yield"                        width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Yield</th>
+    <th id="Cost"                         width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Cost</th>
+    <th id="Margin"                       width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Margin</th>
+  </tr></thead>
+  <tbody>
+  </tbody>
+
+</table>
+
+
+<br>&nbsp;
+<button data-inline="true" onClick="x();">test</button><br>
+<br>&nbsp;<br>
+
+
+  </div>
+
+  <div data-role="footer" id="footerTestGrid" data-position="fixed">
+  <h3>&copy; Olson Research Associates, Inc.</h3>
+  </div>
+
+
+</div>
+
+</body>
+
+</html>
