@@ -223,13 +223,6 @@ function LocalDataSetDataPump_resetRowOrder()
 
 {
 this.rowIndex=0;
-
-//
-//
-this.pagemax=10;
-//
-//
-
 this.gridRowOrder=[];
 for(var ro=0;ro<this.gridData.length;ro++)
   { this.gridRowOrder[ro]=ro; }
@@ -250,26 +243,32 @@ return(this.rowIndex<this.gridData.length);
 function LocalDataSetDataPump_nextPage(Grid,triggerRow,metrics)
 
 {
-gridLoadingMessage(Grid,"show");
-
-var pump=this;
-setTimeout(function(){ sd(pump,Grid); },3000);
-}
-
-function sd(pump,Grid)
-
-{
 gridSiphonData(Grid);
-gridLoadingMessage(Grid,"hide");
-pump.pagemax=pump.gridData.length;
 }
+
+//function LocalDataSetDataPump_nextPage(Grid,triggerRow,metrics)
+//
+//{
+//gridLoadingMessage(Grid,"show");
+//
+//var pump=this;
+//setTimeout(function(){ sd(pump,Grid); },3000);
+//}
+//
+//function sd(pump,Grid)
+//
+//{
+//gridSiphonData(Grid);
+//gridLoadingMessage(Grid,"hide");
+//pump.pagemax=pump.gridData.length;
+//}
 
 
 function LocalDataSetDataPump_nextRow()
 
 {
-//return(this.rowIndex<this.gridData.length?this.rowData(this.rowIndex++):null);
-return(this.rowIndex<this.pagemax?this.rowData(this.rowIndex++):null);
+return(this.rowIndex<this.gridData.length?this.rowData(this.rowIndex++):null);
+//return(this.rowIndex<this.pagemax?this.rowData(this.rowIndex++):null);
 }
 
 function LocalDataSetDataPump_resetDataSet(Grid)
@@ -374,6 +373,159 @@ for(r1=0;r1<(this.gridData.length-1);r1++)
       }
     }
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+function AJAXPagedDataSetDataPump(dataPagesURL,useCORS)
+
+{
+this.totalRows      =AJAXPagedDataSetDataPump_getTotalRows;
+this.highestRowIndex=AJAXPagedDataSetDataPump_getHighestRowIndex;
+this.resetDataSet   =AJAXPagedDataSetDataPump_resetDataSet;
+this.sortColumn     =AJAXPagedDataSetDataPump_sortColumn;
+this.rowData        =AJAXPagedDataSetDataPump_rowData;
+this.haveMoreData   =AJAXPagedDataSetDataPump_haveMoreData;
+this.nextRow        =AJAXPagedDataSetDataPump_nextRow;
+this.nextPage       =AJAXPagedDataSetDataPump_nextPage;
+
+//internal
+this.finishNextPage =AJAXPagedDataSetDataPump_finishNextPage;
+this.delayTest      =AJAXPagedDataSetDataPump_delayTest;
+this.nextPageFail   =AJAXPagedDataSetDataPump_nextPageFail;
+
+
+var AJAXDataType="json";
+
+if(useCORS)
+  AJAXDataType+="p";
+
+this.gridDataPagesURL=dataPagesURL;
+this.gridAJAXDataType=AJAXDataType;
+}
+
+
+function AJAXPagedDataSetDataPump_getTotalRows()
+
+{
+return(this.rowsTotal);
+}
+
+function AJAXPagedDataSetDataPump_getHighestRowIndex()
+
+{
+return(this.rowIndex);
+}
+
+function AJAXPagedDataSetDataPump_resetDataSet(Grid)
+
+{
+var settings=Grid.data("settings");
+
+this.paging=false;
+this.totalPages=-1;
+this.pageIndex=-1;
+this.rowsPerPage=settings.rowsPerPage;
+this.rowsTotal=0;
+this.rowIndex=0;
+this.nextPage(Grid,0,null);
+}
+
+function AJAXPagedDataSetDataPump_sortColumn()
+
+{
+}
+
+function AJAXPagedDataSetDataPump_rowData(rowIndex,rowPageIndex,pageIndex)
+
+{
+return(this.currentPage.rows[rowPageIndex]);
+}
+
+function AJAXPagedDataSetDataPump_haveMoreData()
+
+{
+return(this.rowIndex<this.totalRows());
+}
+
+function AJAXPagedDataSetDataPump_nextRow()
+
+{
+return(this.pageRowIndex<this.pageRows?this.rowData(this.rowIndex++,this.pageRowIndex++,this.pageIndex):null);
+}
+
+function AJAXPagedDataSetDataPump_nextPage(Grid,triggerRow,metrics)
+
+{
+if(this.paging)return;
+this.paging=true;
+
+this.pageIndex++;
+if((this.totalPages!=-1)&&(this.pageIndex>=this.totalPages)) return(false);
+
+gridLoadingMessage(Grid,"show");
+
+var pump=this;
+$.ajax({
+  dataType: this.gridAJAXDataType,  // "json" or "jsonp"
+  url:      this.gridDataPagesURL,
+  data:     {
+            page: this.pageIndex,
+            rowsPerPage:this.rowsPerPage
+            } 
+  })
+   .done(function(data){pump.finishNextPage(Grid,data);})
+   .fail(function(jqxhr, textStatus, error){pump.nextPageFail(Grid, jqxhr, textStatus, error);});
+
+
+//$.getJSON(this.gridDataPagesURL+"?page="+this.pageIndex+"&rowsPerPage="+this.rowsPerPage)
+//   .done(function(data){pump.finishNextPage(Grid,data);})
+//   .fail(function(jqxhr, textStatus, error){pump.nextPageFail(Grid, jqxhr, textStatus, error);});
+//setTimeout(function(){ pump.delayTest(Grid); },3000);
+//setTimeout(function(){ pump.delayTest(Grid); },30);
+}
+
+function AJAXPagedDataSetDataPump_delayTest(Grid)
+
+{
+var pump=this;
+$.ajax({
+  dataType: this.gridAJAXDataType, // "json" or "jsonp"
+  url:      this.gridDataPagesURL,
+  data:     {
+            page: this.pageIndex,
+            rowsPerPage:this.rowsPerPage
+            } 
+  })
+   .done(function(data){pump.finishNextPage(Grid,data);})
+   .fail(function(jqxhr, textStatus, error){pump.nextPageFail(Grid, jqxhr, textStatus, error);});
+}
+
+function AJAXPagedDataSetDataPump_nextPageFail(Grid, jqxhr, textStatus, error)
+
+{
+alert("fail: "+textStatus + ', ' + error);
+}
+
+function AJAXPagedDataSetDataPump_finishNextPage(Grid,pageJSON)
+
+{
+this.currentPage=pageJSON;
+this.pageRows=0;
+this.pageRowIndex=0;
+if(this.pageIndex < this.currentPage.totalPages)
+  {
+  this.totalPages = this.currentPage.totalPages;
+  this.rowsTotal  = this.currentPage.totalRows;
+  this.pageRows   = this.currentPage.rows.length;
+  }
+else
+  this.totalPages=0;
+
+gridSiphonData(Grid);
+gridLoadingMessage(Grid,"hide");
+
+this.paging=false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -681,6 +833,9 @@ $.fn.jqmGrid.defaultOptions =
   'height'            : -1,
   'minHeight'         : -1,
   'maxHeight'         : -1,
+  'rowsPerPage'       : 20,
+  'useCORS'           : false,
+  'dataPumpURL'       : '',
   'columns'           : []
   };
 
@@ -690,14 +845,17 @@ $.fn.jqmGrid.defaultOptions =
 
 ///////////////////////////////////
 
-function pullAttr(Grid,attrName)
+function pullAttr(Grid,attrName,defaultValue)
 
 {
 var v=$(Grid).attr(attrName);
 //var v=$(Grid).prop(attrName);
 if(typeof v==="undefined")
   {
-v=-1;
+  if(typeof defaultValue!=="undefined")
+    v=defaultValue
+  else
+    v=-1;
   }
 return(v);
 }
@@ -708,10 +866,13 @@ function extractSettings(Grid,columnRow)
 {
 var Settings=new Object;
 
-Settings.height   =pullAttr(Grid,"height");
-Settings.width    =pullAttr(Grid,"width");
-Settings.maxHeight=pullAttr(Grid,"max-height");
-Settings.minHeight=pullAttr(Grid,"min-height");
+Settings.height     =pullAttr(Grid,"height",-1);
+Settings.width      =pullAttr(Grid,"width",-1);
+Settings.maxHeight  =pullAttr(Grid,"max-height",-1);
+Settings.minHeight  =pullAttr(Grid,"min-height",-1);
+Settings.rowsPerPage=pullAttr(Grid,"data-set-rows-per-page",20);
+Settings.dataPumpURL=pullAttr(Grid,"data-set-data-pump-url","");
+Settings.useCORS    =pullAttr(Grid,"data-set-data-pump-use-CORS","false").toLowerCase()==="true";
 
 Settings.columns=[];
 columnRow.each(function(index,th)
@@ -822,6 +983,11 @@ $("table:jqmData(role='grid')").each(function()
     if(initialData.length>0)
       {
       var dataPump=new LocalDataSetDataPump(initialData);
+      newGrid.jqmGrid("dataPump", dataPump);      
+      }
+    else if(Settings.dataPumpURL!="")
+      {
+      var dataPump=new AJAXPagedDataSetDataPump(Settings.dataPumpURL,Settings.useCORS);
       newGrid.jqmGrid("dataPump", dataPump);      
       }
     }
