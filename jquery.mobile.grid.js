@@ -35,6 +35,31 @@ else
   msg.hide();
 }
 
+function gridFull(Grid)
+
+{
+return($(Grid.data("fullID")));
+}
+
+function gridHeader(Grid)
+
+{
+return($(Grid.data("headerID")));
+}
+
+function gridHeaderCell(Grid,colID)
+
+{
+var cols=Grid.data("cols");
+var col=colOfName(cols,colID);
+if(col)
+  {
+  return(gridHeader(Grid).find("th#"+col.name));
+  }
+else
+  return($());
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 function gridDataRowMetrics(Grid)
@@ -72,6 +97,7 @@ function gridResetDataSet(Grid)
 {
 gridEmptyDataRows(Grid);
 Grid.data("dataPump").resetDataSet(Grid);
+Grid.data("nextRowID",0);
 }
 
 function gridScrolled(divGridBody,scrollHeight,scrollTop)
@@ -87,13 +113,21 @@ if(!dataPump.haveMoreData()) return;
 
 var topVisibleRow=Math.floor(scrollTop/gridMetrics.rowHeight);
 var lastVisibleRow=topVisibleRow+gridMetrics.rowsVisible;
-//if(lastVisibleRow>=dataPump.rowIndex)
 if(lastVisibleRow>=dataPump.highestRowIndex())
   {
   dataPump.nextPage(Grid,lastVisibleRow,gridMetrics);
   }
 }
 
+function gridDoError(Grid,msg)
+
+{
+var cols=Grid.data("cols");
+var settings=Grid.data("settings");
+var dataRows=Grid.find("tbody");
+var errorHTML='<tr class="ui-body-'+settings.dataRowErrorTheme+'"><td class="ui-jqmGrid-td-error-cell" colspan='+cols.visibleColumnCount+'>Error: '+msg+'</td></tr>';
+dataRows.append(errorHTML);
+}
 
 function gridSiphonData(Grid)
 
@@ -102,6 +136,7 @@ var cols=Grid.data("cols");
 var settings=Grid.data("settings");
 var sortedCol=Grid.data("sortedCol");
 var dataPump=Grid.data("dataPump");
+var rowID=Grid.data("nextRowID");
 
 var dataRows=Grid.find("tbody");
 
@@ -127,7 +162,7 @@ while(rowData=dataPump.nextRow())
       }
     }
 
-  var rowHTML='<tr class="'+(rowClass==""?'ui-body-'+rowTheme:rowClass)+'"'+(rowStyle==""?'':' style="'+rowStyle+'"')+'>';
+  var rowHTML='<tr id="row'+(rowID++)+'" class="'+(rowClass==""?'ui-body-'+rowTheme:rowClass)+'"'+(rowStyle==""?'':' style="'+rowStyle+'"')+'>';
 
   if(typeof rowData!=="object")
      rowData=new Object;
@@ -176,14 +211,14 @@ while(rowData=dataPump.nextRow())
         cellStyle+=cellDef.style;
       }
 
-    rowHTML+='<td'+(cellStyle==""?"":' style="'+cellStyle+'"')+(cellClass==""?"":' class="'+cellClass+'"')+'>'+cellData+'</td>';
+    rowHTML+='<td id="'+col.name+'"'+(cellStyle==""?"":' style="'+cellStyle+'"')+(cellClass==""?"":' class="'+cellClass+'"')+'>'+cellData+'</td>';
     }
 
   dataHTML += rowHTML+'</tr>';
   }
 dataRows.append(dataHTML);
+Grid.data("nextRowID",rowID);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -198,11 +233,10 @@ this.rowData        =LocalDataSetDataPump_rowData;
 this.haveMoreData   =LocalDataSetDataPump_haveMoreData;
 this.nextRow        =LocalDataSetDataPump_nextRow;
 this.nextPage       =LocalDataSetDataPump_nextPage;
-
+this.xlatRowID      =LocalDataSetDataPump_xlatRowID;
 
 //internal
 this.resetRowOrder=LocalDataSetDataPump_resetRowOrder;
-
 
 this.gridData=localData;
 }
@@ -234,6 +268,12 @@ function LocalDataSetDataPump_rowData(rowIndex)
 return((rowIndex<this.gridData.length)?this.gridData[this.gridRowOrder[rowIndex]]:new Object);
 }
 
+function LocalDataSetDataPump_xlatRowID(rowID)
+
+{
+return(this.gridRowOrder[rowID]);
+}
+
 function LocalDataSetDataPump_haveMoreData()
 
 {
@@ -246,29 +286,10 @@ function LocalDataSetDataPump_nextPage(Grid,triggerRow,metrics)
 gridSiphonData(Grid);
 }
 
-//function LocalDataSetDataPump_nextPage(Grid,triggerRow,metrics)
-//
-//{
-//gridLoadingMessage(Grid,"show");
-//
-//var pump=this;
-//setTimeout(function(){ sd(pump,Grid); },3000);
-//}
-//
-//function sd(pump,Grid)
-//
-//{
-//gridSiphonData(Grid);
-//gridLoadingMessage(Grid,"hide");
-//pump.pagemax=pump.gridData.length;
-//}
-
-
 function LocalDataSetDataPump_nextRow()
 
 {
 return(this.rowIndex<this.gridData.length?this.rowData(this.rowIndex++):null);
-//return(this.rowIndex<this.pagemax?this.rowData(this.rowIndex++):null);
 }
 
 function LocalDataSetDataPump_resetDataSet(Grid)
@@ -388,22 +409,20 @@ this.rowData        =AJAXPagedDataSetDataPump_rowData;
 this.haveMoreData   =AJAXPagedDataSetDataPump_haveMoreData;
 this.nextRow        =AJAXPagedDataSetDataPump_nextRow;
 this.nextPage       =AJAXPagedDataSetDataPump_nextPage;
+this.xlatRowID      =AJAXPagedDataSetDataPump_xlatRowID;
 
 //internal
 this.finishNextPage =AJAXPagedDataSetDataPump_finishNextPage;
 this.delayTest      =AJAXPagedDataSetDataPump_delayTest;
 this.nextPageFail   =AJAXPagedDataSetDataPump_nextPageFail;
-
+this.setGridPaging  =AJAXPagedDataSetDataPump_setGridPaging;
 
 var AJAXDataType="json";
-
 if(useCORS)
   AJAXDataType+="p";
-
 this.gridDataPagesURL=dataPagesURL;
 this.gridAJAXDataType=AJAXDataType;
 }
-
 
 function AJAXPagedDataSetDataPump_getTotalRows()
 
@@ -436,6 +455,12 @@ function AJAXPagedDataSetDataPump_sortColumn()
 {
 }
 
+function AJAXPagedDataSetDataPump_xlatRowID(rowID)
+
+{
+return(rowID);
+}
+
 function AJAXPagedDataSetDataPump_rowData(rowIndex,rowPageIndex,pageIndex)
 
 {
@@ -454,21 +479,39 @@ function AJAXPagedDataSetDataPump_nextRow()
 return(this.pageRowIndex<this.pageRows?this.rowData(this.rowIndex++,this.pageRowIndex++,this.pageIndex):null);
 }
 
+function AJAXPagedDataSetDataPump_setGridPaging(Grid,enable)
+
+{
+if(enable)
+  {
+  this.paging=true;
+  gridLoadingMessage(Grid,"show");
+  }
+else
+  {
+  this.paging=false;
+  gridLoadingMessage(Grid,"hide");
+  }
+
+return(enable);
+}
+
+
 function AJAXPagedDataSetDataPump_nextPage(Grid,triggerRow,metrics)
 
 {
 if(this.paging)return;
-this.paging=true;
 
 this.pageIndex++;
 if((this.totalPages!=-1)&&(this.pageIndex>=this.totalPages)) return(false);
 
-gridLoadingMessage(Grid,"show");
+this.setGridPaging(Grid,true);
 
 var pump=this;
 $.ajax({
-  dataType: this.gridAJAXDataType,  // "json" or "jsonp"
-  url:      this.gridDataPagesURL,
+  dataType:   this.gridAJAXDataType,  // "json" or "jsonp"
+  url:        this.gridDataPagesURL,
+  beforeSend: function(jqxhr, settings){jqxhr.requestURL=pump.gridDataPagesURL;},  
   data:     {
             page: this.pageIndex,
             rowsPerPage:this.rowsPerPage
@@ -478,9 +521,6 @@ $.ajax({
    .fail(function(jqxhr, textStatus, error){pump.nextPageFail(Grid, jqxhr, textStatus, error);});
 
 
-//$.getJSON(this.gridDataPagesURL+"?page="+this.pageIndex+"&rowsPerPage="+this.rowsPerPage)
-//   .done(function(data){pump.finishNextPage(Grid,data);})
-//   .fail(function(jqxhr, textStatus, error){pump.nextPageFail(Grid, jqxhr, textStatus, error);});
 //setTimeout(function(){ pump.delayTest(Grid); },3000);
 //setTimeout(function(){ pump.delayTest(Grid); },30);
 }
@@ -490,8 +530,9 @@ function AJAXPagedDataSetDataPump_delayTest(Grid)
 {
 var pump=this;
 $.ajax({
-  dataType: this.gridAJAXDataType, // "json" or "jsonp"
-  url:      this.gridDataPagesURL,
+  dataType:   this.gridAJAXDataType, // "json" or "jsonp"
+  url:        this.gridDataPagesURL,
+  beforeSend: function(jqxhr, settings){jqxhr.requestURL=pump.gridDataPagesURL;},  
   data:     {
             page: this.pageIndex,
             rowsPerPage:this.rowsPerPage
@@ -504,7 +545,10 @@ $.ajax({
 function AJAXPagedDataSetDataPump_nextPageFail(Grid, jqxhr, textStatus, error)
 
 {
-alert("fail: "+textStatus + ', ' + error);
+gridDoError(Grid,'unable to load data from: "'+jqxhr.requestURL+'"; '+error);
+this.setGridPaging(Grid,false);
+
+//alert("fail: "+textStatus + ', ' + error);
 }
 
 function AJAXPagedDataSetDataPump_finishNextPage(Grid,pageJSON)
@@ -523,9 +567,7 @@ else
   this.totalPages=0;
 
 gridSiphonData(Grid);
-gridLoadingMessage(Grid,"hide");
-
-this.paging=false;
+this.setGridPaging(Grid,false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -677,8 +719,6 @@ var methods=
           gridHTML +=  '</div>';
           gridHTML +=   '<div id="'+BaseID+'div-table-header" class="ui-jqmGrid-div-table-header">';
           
-
-          
           gridHTML +=     '<table id="'+BaseID+'table-header" class="ui-jqmGrid-table-header">';
           gridHTML +=       '<thead>';
           gridHTML +=         '<tr class="'+BC+'">';
@@ -711,13 +751,23 @@ var methods=
         Grid=$("#"+gridID); // "Grid" points to the original and, now deleted grid/table DOM jquery object;
                             //         wrap the new one and continue...
 
+        cols.visibleColumnCount = visibleColumnCount;
         Grid.data("cols",cols);
         Grid.data("settings",settings);
         Grid.data("dataRowMetrics",null);
 
-        var FullGrid=$("#"+BaseID+"div-table-wrapper"); // "Grid" always points to the actual <table> that holds the
-                                                        //    the actual data;  "FullGrid" points to the outermost parent
-                                                        //    wrapper <div>;  essentially, the whole smash...
+
+
+        var containerGirdID="#"+BaseID+"table-header";
+        Grid.data("headerID",containerGirdID);
+        
+        containerGirdID="#"+BaseID+"div-table-wrapper";
+        Grid.data("fullID",containerGirdID);
+        
+        
+        var FullGrid=$(containerGirdID); // "Grid" always points to the actual <table> that holds the
+                                         //    the actual data;  "FullGrid" points to the outermost parent
+                                         //    wrapper <div>;  essentially, the whole smash...
 
         var bodyDiv=FullGrid.find(".ui-jqmGrid-div-table-body");
         bodyDiv.on("scroll.jqmGrid", function(event)
@@ -759,19 +809,41 @@ var methods=
         });
 
     },
+  dataCell: function(row,colID)
+    {
+    var cells=$();
+    this.each(function()
+      {
+      var Grid=$(this);
+      var dataPump=Grid.data("dataPump");
+      var cols=Grid.data("cols");
+      var col=colOfName(cols,colID);
+      if(col)
+        {
+        var rowID=dataPump.xlatRowID(row);
+        cells = cells.add( Grid.find("#row"+rowID+" #"+col.name) );
+        }
+      });
+    
+    return cells;
+    },
+  headerCell: function(colID)
+    {
+    var cells=$();
+    this.each(function()
+      {
+      var Grid=$(this);
+      cells.add( gridHeaderCell(Grid,colID) );
+      });
+    
+    return cells;
+    },
   columnLabel: function(colID,newLabel)
     {
     return this.each(function()
       {
-        var Grid=$(this);
-        var cols=Grid.data("cols");
-        var col=colOfName(cols,colID);
-        if(col)
-          {
-          col.label=newLabel;
-          var th=Grid.find("#colrow #"+col.name);
-          th.html(newLabel);
-          }
+      var Grid=$(this);
+      gridHeaderCell(Grid,colID).html(newLabel);
       });
     },
   dataPump: function(dataPump)
@@ -829,6 +901,7 @@ $.fn.jqmGrid.defaultOptions =
   'headerTheme'       : 'b',
   'dataRowTheme'      : 'd',
   'dataRowHoverTheme' : 'e',
+  'dataRowErrorTheme' : 'e',
   'width'             : -1,
   'height'            : -1,
   'minHeight'         : -1,
@@ -957,7 +1030,6 @@ dataRows.each(function(index,tr)
 
 return(initialData);
 }
-
 
 function enhanceGrids()
 

@@ -67,6 +67,10 @@ background:#d0d0d0;
 .ui-jqmGrid-table td, .ui-jqmGrid-table th
 {
 padding:4px;
+}
+
+.ui-jqmGrid-table tr
+{
 font-weight:400;
 }
 
@@ -153,4 +157,8 @@ border-right:1px solid silver !important;
 border-bottom:1px solid silver !important;
 }
 
-
+.ui-jqmGrid-td-error-cell
+{
+text-align:center;
+font-weight:700;
+}
