@@ -4,7 +4,8 @@ function colOfName(cols,N)
 
 {
 for(var i=0;i<cols.length;i++)
-  { if(cols[i].name==N) return(cols[i]) }
+  if(cols[i].name==N) return(cols[i]);
+  
 return(null);
 }
 
@@ -13,10 +14,10 @@ function gridColClick(Grid,cols,colID)
 {
 var col=colOfName(cols,colID);
 var sortedCol=Grid.data("sortedCol");
-if(!sortedCol)
-   col.ascend=false;
-else if(sortedCol.index!=col.index)
-   col.ascend=false;
+if(!sortedCol) 
+  col.ascend=false;
+else if(sortedCol.index!=col.index) 
+  col.ascend=false;
 
 col.ascend=(!col.ascend);
 
@@ -259,7 +260,9 @@ function LocalDataSetDataPump_resetRowOrder()
 this.rowIndex=0;
 this.gridRowOrder=[];
 for(var ro=0;ro<this.gridData.length;ro++)
-  { this.gridRowOrder[ro]=ro; }
+  { 
+  this.gridRowOrder[ro]=ro;
+  }
 }
 
 function LocalDataSetDataPump_rowData(rowIndex)
@@ -295,7 +298,17 @@ return(this.rowIndex<this.gridData.length?this.rowData(this.rowIndex++):null);
 function LocalDataSetDataPump_resetDataSet(Grid)
 
 {
-this.resetRowOrder();
+var settings=Grid.data("settings");
+var sortedCol=settings.initialSortedColumn;
+if(sortedCol)
+  {
+  this.sortColumn(Grid,sortedCol);
+  }
+else
+  {
+  this.resetRowOrder();
+  }
+  
 this.nextPage(Grid,0,null);
 }
 
@@ -512,10 +525,10 @@ $.ajax({
   dataType:   this.gridAJAXDataType,  // "json" or "jsonp"
   url:        this.gridDataPagesURL,
   beforeSend: function(jqxhr, settings){jqxhr.requestURL=pump.gridDataPagesURL;},  
-  data:     {
-            page: this.pageIndex,
-            rowsPerPage:this.rowsPerPage
-            } 
+  data:       {
+              page:        this.pageIndex,
+              rowsPerPage: this.rowsPerPage
+              } 
   })
    .done(function(data){pump.finishNextPage(Grid,data);})
    .fail(function(jqxhr, textStatus, error){pump.nextPageFail(Grid, jqxhr, textStatus, error);});
@@ -533,10 +546,10 @@ $.ajax({
   dataType:   this.gridAJAXDataType, // "json" or "jsonp"
   url:        this.gridDataPagesURL,
   beforeSend: function(jqxhr, settings){jqxhr.requestURL=pump.gridDataPagesURL;},  
-  data:     {
-            page: this.pageIndex,
-            rowsPerPage:this.rowsPerPage
-            } 
+  data:       {
+              page:        this.pageIndex,
+              rowsPerPage: this.rowsPerPage
+              } 
   })
    .done(function(data){pump.finishNextPage(Grid,data);})
    .fail(function(jqxhr, textStatus, error){pump.nextPageFail(Grid, jqxhr, textStatus, error);});
@@ -755,8 +768,7 @@ var methods=
         Grid.data("cols",cols);
         Grid.data("settings",settings);
         Grid.data("dataRowMetrics",null);
-
-
+        Grid.data("sortedCol",settings.initialSortedColumn);
 
         var containerGirdID="#"+BaseID+"table-header";
         Grid.data("headerID",containerGirdID);
@@ -898,18 +910,19 @@ var methods=
 
 $.fn.jqmGrid.defaultOptions =
   {
-  'headerTheme'       : 'b',
-  'dataRowTheme'      : 'd',
-  'dataRowHoverTheme' : 'e',
-  'dataRowErrorTheme' : 'e',
-  'width'             : -1,
-  'height'            : -1,
-  'minHeight'         : -1,
-  'maxHeight'         : -1,
-  'rowsPerPage'       : 20,
-  'useCORS'           : false,
-  'dataPumpURL'       : '',
-  'columns'           : []
+  'headerTheme'         : 'b',
+  'dataRowTheme'        : 'd',
+  'dataRowHoverTheme'   : 'e',
+  'dataRowErrorTheme'   : 'e',
+  'width'               : -1,
+  'height'              : -1,
+  'minHeight'           : -1,
+  'maxHeight'           : -1,
+  'rowsPerPage'         : 20,
+  'useCORS'             : false,
+  'dataPumpURL'         : '',
+  'initialSortedColumn' : null,
+  'columns'             : []
   };
 
 
@@ -948,6 +961,7 @@ Settings.dataPumpURL=pullAttr(Grid,"data-set-data-pump-url","");
 Settings.useCORS    =pullAttr(Grid,"data-set-data-pump-use-CORS","false").toLowerCase()==="true";
 
 Settings.columns=[];
+Settings.initialSortedColumn=null;
 columnRow.each(function(index,th)
   {
   var column=new Object;
@@ -992,6 +1006,23 @@ columnRow.each(function(index,th)
     catch(e)
       { column.format=function(){return "err";};}
     }
+  /////////
+  var sortDir=$(th).attr("data-sort-direction");
+  if(typeof sortDir==="string")
+    {
+    sortDir=sortDir.toLowerCase();
+    if(sortDir=="desc")
+      {
+      column.ascend=false;
+      Settings.initialSortedColumn=column;
+      }
+    else if(sortDir=="asc")
+      {
+      column.ascend=true;
+      Settings.initialSortedColumn=column;
+      }
+    }
+ 
   /////////
 
   Settings.columns[index]=column;
@@ -1070,5 +1101,3 @@ $(document).on("pageinit",function()
 {
 enhanceGrids();
 });
-
-

@@ -19,7 +19,7 @@
 <!--  <scr ipt type="text/javascript" src="/jQueryMobile/jquery.mobile-1.3.1.min.js"></scr ipt> -->
 <!--  <li nk rel="stylesheet" type="text/css" media="screen" href="/jQueryMobile/jquery.mobile-1.3.1.min.css" /> -->
 
-
+<script type="text/javascript" src="/jSON/1.0/json2.min.js"></script>
 <script type="text/javascript" src="/jQueryMobile/jqmGrid/jquery.mobile.grid.js"></script>
 <link rel="stylesheet" type="text/css" media="screen" href="/jQueryMobile/jqmGrid/jquery.mobile.grid.css" />
 
@@ -46,36 +46,19 @@ catch(e)
   }
 }
 
-
-
 function x()
 
 {
-var TestData=[];
-
-for(var i=0;i<30;i++)
-  {
-  TestData[i]=
-    {
-    RowID:     {value:i},
-    TeamID:    {value:"ti-"+i},
-    TeamName:  {value:"tn-"+i},
-    Yield:     {value:1+i},
-    Cost:      {value:2+i},
-    Margin:    {value:3+i}
-    }
-  }
-
-var dataPump=new LocalDataSetDataPump(TestData);
-$("#tableYieldCostMargin").jqmGrid("dataPump", dataPump);
+//var cell=$("#tableAddressList").jqmGrid("dataCell",3,"Margin");
+var cell=$("#tableAddressList").jqmGrid("headerCell","Margin");
+cell.html("this is it!");
 }
 
 
-$(document).on("pageinit",function()
-{
-x();
-});
-
+//$(document).on("pageinit",function()
+//{
+//x();
+//});
 
 </script>
 
@@ -92,17 +75,13 @@ x();
 
   <div data-role="content" id="contentTestGrid">
 
-<div id="datapumpmsg" style="height:30px;width:200px;background:yellow;padding:5px;margin-bottom:5px;border:1px;"></div>
 
-
-<table data-role="grid" id="tableYieldCostMargin" height=150>
+<table data-role="grid" id="tableAddressList" height=350 data-set-rows-per-page=100 data-set-data-pump-url="http://localhost:80/Test8GridData.js" data-set-data-pump-use-CORS="true">
   <thead><tr>
-    <th id="RowID"    data-hidden="true"              ></th>
-    <th id="TeamID"   data-hidden="false" width=70    >Team #</th>
-    <th id="TeamName"                     width=300   >Bank Name</th>
-    <th id="Yield"                        width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}" data-sort-direction="desc">Yield</th>
-    <th id="Cost"                         width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Cost</th>
-    <th id="Margin"                       width=125 align=center data-format="function(value){return FormatNumber(value*100,2);}">Margin</th>
+    <th id="ContactID"      data-hidden="true"           ></th>
+    <th id="FirstName"                          width=200>First Name</th>
+    <th id="LastName"                           width=200>Last Name</th>
+    <th id="emailAddress1"                      width=400>email Address</th>
   </tr></thead>
   <tbody>
   </tbody>

@@ -161,4 +161,5 @@ border-bottom:1px solid silver !important;
 {
 text-align:center;
 font-weight:700;
+width:1px; /* force text to wrap */
 }
