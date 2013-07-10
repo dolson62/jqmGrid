@@ -46,12 +46,13 @@ catch(e)
   }
 }
 
+var ln=true;
+
 function x()
 
 {
-//var cell=$("#tableAddressList").jqmGrid("dataCell",3,"Margin");
-var cell=$("#tableAddressList").jqmGrid("headerCell","Margin");
-cell.html("this is it!");
+gridShowHideColumn($("#tableAddressList"),"LastName",ln);
+ln=(!ln);
 }
 
 
@@ -78,8 +79,8 @@ cell.html("this is it!");
 <table data-role="grid" id="tableAddressList" height=350 data-set-rows-per-page=100 data-set-data-pump-url="http://localhost:80/Test8GridData.js" data-set-data-pump-use-CORS="true">
   <thead><tr>
     <th id="ContactID"      data-hidden="true"           ></th>
-    <th id="FirstName"                          width=200>First Name</th>
-    <th id="LastName"                           width=200>Last Name</th>
+    <th id="FirstName"                          width=100>First Name</th>
+    <th id="LastName"                           width=100>Last Name</th>
     <th id="emailAddress1"                      width=400>email Address</th>
   </tr></thead>
   <tbody>

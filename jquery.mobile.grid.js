@@ -61,6 +61,31 @@ else
   return($());
 }
 
+function gridShowHideColumn(Grid,colID,hide)
+
+{
+var fg=gridFull(Grid);
+var cols=Grid.data("cols");
+var col=colOfName(cols,colID);
+if(col)
+  {
+  var c=fg.find("td#"+col.name+", th#"+col.name);  
+  if(hide)
+    {
+    col.hidden=true;
+    c.hide();
+    cols.visibleColumnCount--;
+    }
+  else
+    {
+    col.hidden=false;
+    c.show();
+    cols.visibleColumnCount++;
+    }
+  }
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 function gridDataRowMetrics(Grid)
@@ -725,8 +750,8 @@ var methods=
           ////////
 
           colClass+="ui-btn-up-"+settings.headerTheme+" ui-jqmGrid-col-header";
-          gridHdrColsHTML += '<th id="'+col.name+'"'+(colHdrStyle==""?"":' style="'+colHdrStyle+'"')+' class="hdr-col-cell '+colClass+'">'+colLabel+'</th>';
-          bodyHdrColsHTML += '<th id="'+col.name+'"'+(colBodyStyle==""?"":' style="'+colBodyStyle+'"')+' class="body-col-cell ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>';
+          gridHdrColsHTML  += '<th id="'+col.name+'"'+(colHdrStyle==''?'':' style="'+colHdrStyle+'"')+' class="hdr-col-cell '+colClass+'">'+colLabel+'</th>';
+          bodyHdrColsHTML  += '<th id="'+col.name+'"'+(colBodyStyle==''?'':' style="'+colBodyStyle+'"')+' class="body-col-cell ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>';
           /*
 
           ui-jqmGrid-table-background should be added to the <th> of the "bodyHeader" when the grid is empty (no rows)
