@@ -463,9 +463,11 @@ this.rowIndex=0;
 this.nextPage(Grid,0,null);
 }
 
-function AJAXPagedDataSetDataPump_sortColumn()
+function AJAXPagedDataSetDataPump_sortColumn(Grid,col)
 
 {
+Grid.data("sortedCol",col);
+gridResetDataSet(Grid);
 }
 
 function AJAXPagedDataSetDataPump_xlatRowID(rowID)
@@ -520,15 +522,27 @@ if((this.totalPages!=-1)&&(this.pageIndex>=this.totalPages)) return(false);
 
 this.setGridPaging(Grid,true);
 
+var requestOptions={
+    page:          this.pageIndex,
+    rowsPerPage:   this.rowsPerPage,
+    sortColumn:    "",
+    sortDirection: "ASC"
+    };
+  
+
+var sortedCol=Grid.data("sortedCol");
+if(sortedCol) 
+  {
+  requestOptions.sortColumn=sortedCol.name;
+  requestOptions.sortDirection=(sortedCol.ascend?"ASC":"DESC");
+  }
+
 var pump=this;
 $.ajax({
   dataType:   this.gridAJAXDataType,  // "json" or "jsonp"
   url:        this.gridDataPagesURL,
   beforeSend: function(jqxhr, settings){jqxhr.requestURL=pump.gridDataPagesURL;},  
-  data:       {
-              page:        this.pageIndex,
-              rowsPerPage: this.rowsPerPage
-              } 
+  data:       requestOptions
   })
    .done(function(data){pump.finishNextPage(Grid,data);})
    .fail(function(jqxhr, textStatus, error){pump.nextPageFail(Grid, jqxhr, textStatus, error);});
