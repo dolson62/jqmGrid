@@ -83,7 +83,6 @@ if(col)
     cols.visibleColumnCount++;
     }
   }
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -205,6 +204,9 @@ while(rowData=dataPump.nextRow())
 
     if(col.align!="")
       cellStyle+="text-align:"+col.align+";";
+    
+    if(col.widthText!="")
+      cellStyle+="max-width:"+col.widthText;
 
     if(rowData.hasOwnProperty(col.name))
       {
@@ -702,6 +704,7 @@ var methods=
 
           ////////
 
+          col.widthText="";
           if(col.hasOwnProperty('width'))
             colWidth=col.width;
           else
@@ -713,8 +716,12 @@ var methods=
                var colWidth=(colWidth*100)+"%;";
             else
                var colWidth=colWidth+"px;";
+               
             colHdrStyle+="width:"+colWidth+col.hdrStyle;
             colBodyStyle+="width:"+colWidth;
+//            colHdrStyle+="max-width:"+colWidth;
+//            colBodyStyle+="max-width:"+colWidth;
+            col.widthText=colWidth;
             }
 
           ////////

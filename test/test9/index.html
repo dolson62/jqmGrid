@@ -76,17 +76,25 @@ var fg=gridFull($("#tableAddressList"));
 
   <div data-role="content" id="contentTestGrid">
 
+
+<!-- <th id="ContactID"      data-hidden="true"           ></th> -->
+
+
 <table data-role="grid" id="tableAddressList" height=350 data-set-rows-per-page=100 data-set-data-pump-url="http://localhost:80/Test8GridData.js" data-set-data-pump-use-CORS="true">
   <thead>
     <tr>
-      <th id="ContactID"      data-hidden="true"           ></th>
+      <th id="ContactName"   colspan=2          >Contact Name</th>
+      <th id="Address"       colspan=4          >Address</th>
+      <th id="emailAddress1" rowspan=2 width=250>email Address</th>
+    </tr>
+    <tr>
       <th id="FirstName"                          width=150>First Name</th>
       <th id="LastName"                           width=150>Last Name</th>
       <th id="StreetAddr1"                        width=200>Street</th>
       <th id="CityAddr"                           width=125>City</th>
       <th id="StateAddr" align=center             width= 75>State</th>
       <th id="ZipAddr"                            width=100>Zip</th>
-      <th id="emailAddress1"                      width=250>email Address</th>
+ <!-- <th>email address</th>  -->
     </tr>
   </thead>
   <tbody>

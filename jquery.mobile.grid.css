@@ -67,6 +67,7 @@ background:#d0d0d0;
 .ui-jqmGrid-table td, .ui-jqmGrid-table th
 {
 padding:4px;
+overflow: hidden;
 }
 
 .ui-jqmGrid-table tr
