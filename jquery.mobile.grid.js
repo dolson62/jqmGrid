@@ -663,7 +663,8 @@ var methods=
         var cols=settings.columns;
         var headerRows=settings.columnHeaders;
 
-        var col,colLabel,colHdrStyle,colBodyStyle,colClass,colWidth,colHidden;
+        var dataColumn,header;
+        var colLabel,colHdrStyle,colBodyStyle,colClass,colWidth,colHidden;
         var ULC="ui-jqmGrid-ul ";
 
         var r=0,c=0;
@@ -675,47 +676,47 @@ var methods=
         
         for(c=0;c<cols.length;c++)
           {
-          col=cols[c];
-          col.index=c;
-          col.ascend=false;
+          dataColumn=cols[c];
+          dataColumn.index=c;
+          dataColumn.ascend=false;
 
           ////////
 
-          if(!col.hasOwnProperty('format'))
-            col.format=null;
+          if(!dataColumn.hasOwnProperty('format'))
+            dataColumn.format=null;
 
           ////////
 
-          if(!col.hasOwnProperty('class'))
-            col.class="";
+          if(!dataColumn.hasOwnProperty('class'))
+            dataColumn.class="";
 
           ////////
           
-          if(!col.hasOwnProperty('style'))
-            col.style="";
+          if(!dataColumn.hasOwnProperty('style'))
+            dataColumn.style="";
 
           ////////
 
-          if(!col.hasOwnProperty('name'))
-            col.name="col"+(c+1);
+          if(!dataColumn.hasOwnProperty('name'))
+            dataColumn.name="col"+(c+1);
             
-          if(!col.hasOwnProperty('align'))
-	    col.align="";
+          if(!dataColumn.hasOwnProperty('align'))
+	    dataColumn.align="";
 
-	  if(col.hasOwnProperty('hidden'))
-	    { colHidden=col.hidden; }
+	  if(dataColumn.hasOwnProperty('hidden'))
+	    { colHidden=dataColumn.hidden; }
 	  else
 	    {
 	    colHidden=false;
-	    col.hidden=false;
+	    dataColumn.hidden=false;
 	    }
 	    
           if(!colHidden)
             visibleColumnCount++;
           }
 
-        
-        for(r=0;r<headerRows.length;r++)
+        var numberHeaderRows=headerRows.length;
+        for(r=0;r<numberHeaderRows;r++)
           {
           gridHdrColsHTML[r]="";
           bodyHdrColsHTML[r]="";
@@ -723,61 +724,64 @@ var methods=
           
 	  for(c=0;c<headerRow.length;c++)
 	    {
-col=cols[c];
-
-	    hdr=headerRow[c];
+	    header=headerRow[c];
+	    dataColumn=header.dataColumn;
 
 	    colHdrStyle="";
 	    colBodyStyle="";
 
-if(!col.hasOwnProperty('label'))
-  col.label="";
+if((dataColumn)&&(!dataColumn.hasOwnProperty('label')))
+  dataColumn.label="";
 
-	    if(!hdr.hasOwnProperty('label'))
-	      hdr.label="";
-	    colLabel=hdr.label;
+	    if(!header.hasOwnProperty('label'))
+	      header.label="";
+	    colLabel=header.label;
 
             ////////
 
-            if(!hdr.hasOwnProperty('class'))
-              hdr.class="";
+            if(!header.hasOwnProperty('class'))
+              header.class="";
             
             ////////
 
-            if(!hdr.hasOwnProperty('style'))
-              hdr.style="";
+            if(!header.hasOwnProperty('style'))
+              header.style="";
 
             ////////
 
-	    col.widthText="";
-	    if(hdr.hasOwnProperty('width'))
-	      colWidth=hdr.width;
+	    if(dataColumn)
+	      dataColumn.widthText="";
+	      
+	    if(header.hasOwnProperty('width'))
+	      colWidth=header.width;
 	    else
 	      colWidth=0;
 
 	    if(colWidth!=0)
 	      {
 	      if((colWidth>0)&&(colWidth<1))
-		 var colWidth=(colWidth*100)+"%;";
+		 colWidth=(colWidth*100)+"%;";
 	      else
-		 var colWidth=colWidth+"px;";
+		 colWidth=colWidth+"px;";
 
-	      colHdrStyle+="width:"+colWidth+hdr.Style;
+	      colHdrStyle+="width:"+colWidth+header.Style;
 	      colBodyStyle+="width:"+colWidth;
-	      hdr.widthText=colWidth;
+	      header.widthText=colWidth;
+              if(dataColumn)
+                dataColumn.widthText=colWidth;	      
 	      }
 
 	    ////////
 
-	    if(hdr.hasOwnProperty('hidden'))
-	      { colHidden=hdr.hidden; }
+	    if(header.hasOwnProperty('hidden'))
+	      { colHidden=header.hidden; }
 	    else
 	      {
 	      colHidden=false;
-	      hdr.hidden=false;
+	      header.hidden=false;
 	      }
 
-	    colClass=(hdr.class!=""?hdr.class+" ":"");
+	    colClass=(header.class!=""?header.class+" ":"");
 	    if(colHidden)
 	      {
 	      colHdrStyle +="display:none;";
@@ -792,8 +796,8 @@ if(!col.hasOwnProperty('label'))
 	    ////////
 
 	    colClass+="ui-btn-up-"+settings.headerTheme+" ui-jqmGrid-col-header";
-	    gridHdrColsHTML[r]  += '<th id="'+hdr.name+'"'+(colHdrStyle ==''?'':' style="'+colHdrStyle +'"')+' class="hdr-col-cell '+colClass+'">'+colLabel+'</th>';
-	    bodyHdrColsHTML[r]  += '<th id="'+hdr.name+'"'+(colBodyStyle==''?'':' style="'+colBodyStyle+'"')+' class="body-col-cell ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>';
+	    gridHdrColsHTML[r]  += '<th id="'+header.name+'"'+(colHdrStyle ==''?'':' style="'+colHdrStyle +'"')+' class="hdr-col-cell '+colClass+'">'+colLabel+'</th>';
+	    bodyHdrColsHTML[r]  += '<th id="'+header.name+'"'+(colBodyStyle==''?'':' style="'+colBodyStyle+'"')+' class="body-col-cell ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>';
 	    /*
 
 	    ui-jqmGrid-table-background should be added to the <th> of the "bodyHeader" when the grid is empty (no rows)
@@ -815,9 +819,12 @@ if(!col.hasOwnProperty('label'))
           
           gridHTML +=     '<table id="'+BaseID+'table-header" class="ui-jqmGrid-table-header">';
           gridHTML +=       '<thead>';
-          gridHTML +=         '<tr class="'+BC+'">';
-          gridHTML +=            gridHdrColsHTML[0]+'<th id="scrollbar" style="width:'+scrollBarWidth+'px;padding-left:0px;padding-right:0px;" class="ui-jqmGrid-ur ui-jqmGrid-col-header"></th>';
-          gridHTML +=         '</tr>';
+          for(r=0;r<numberHeaderRows;r++)
+            {
+            gridHTML +=       '<tr class="'+BC+'">';
+            gridHTML +=          gridHdrColsHTML[r]+ (r==(numberHeaderRows-1)?'<th id="scrollbar" style="width:'+scrollBarWidth+'px;padding-left:0px;padding-right:0px;" class="ui-jqmGrid-ur ui-jqmGrid-col-header"></th>':'');
+            gridHTML +=       '</tr>';
+            }
           gridHTML +=       '</thead>';
           gridHTML +=     '</table>';
           gridHTML +=   '</div>';
@@ -825,9 +832,12 @@ if(!col.hasOwnProperty('label'))
           gridHTML +=   '<div id="'+BaseID+'div-table-body" class="ui-jqmGrid-div-table-body ui-jqmGrid-table-background"'+(divBodyStyle==''?'':' style="'+divBodyStyle+'"')+'>';
           gridHTML +=     '<table id="'+this.id+'" class="ui-jqmGrid-table">';
           gridHTML +=       '<thead>';
-          gridHTML +=         '<tr>';
-          gridHTML +=            bodyHdrColsHTML[0];
-          gridHTML +=         '</tr>';
+          for(r=0;r<numberHeaderRows;r++)
+            {
+            gridHTML +=         '<tr>';
+            gridHTML +=            bodyHdrColsHTML[r];
+            gridHTML +=         '</tr>';
+            }
           gridHTML +=       '</thead>';
           gridHTML +=       '<tbody>';
           gridHTML +=         '<tr class="cellMeasure ui-jqmGrid-table-background"><td colspan='+visibleColumnCount+'>&nbsp;</td></tr>';
@@ -1147,6 +1157,9 @@ header.colSpan=1;
       }
 
     /////////
+    
+    header.dataColumn=null;
+    header.dataColumn=column;
 
     Settings.columnHeaders[rowIndex][colIndex]=header;
     Settings.columns[colIndex]=column;
