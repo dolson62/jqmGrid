@@ -661,26 +661,23 @@ var methods=
         var BC="ui-btn-up-"+settings.headerTheme;
 
         var cols=settings.columns;
+        var headerRows=settings.columnHeaders;
 
         var col,colLabel,colHdrStyle,colBodyStyle,colClass,colWidth,colHidden;
         var ULC="ui-jqmGrid-ul ";
 
-        var gridHdrColsHTML="";
-        var bodyHdrColsHTML="";
+        var r=0,c=0;
+        var gridHdrColsHTML=[];
+        var bodyHdrColsHTML=[];
+        var headerRow;
         
         var visibleColumnCount=0;
-
-        for(var i=0;i<cols.length;i++)
+        
+        for(c=0;c<cols.length;c++)
           {
-          col=cols[i];
-          col.index=i;
+          col=cols[c];
+          col.index=c;
           col.ascend=false;
-          colHdrStyle="";
-          colBodyStyle="";
-
-          if(!col.hasOwnProperty('label'))
-            col.label="";
-          colLabel=col.label;
 
           ////////
 
@@ -693,82 +690,120 @@ var methods=
             col.class="";
 
           ////////
-
-          if(!col.hasOwnProperty('hdrStyle'))
-            col.hdrStyle="";
-
-          ////////
-
+          
           if(!col.hasOwnProperty('style'))
             col.style="";
 
           ////////
 
-          col.widthText="";
-          if(col.hasOwnProperty('width'))
-            colWidth=col.width;
-          else
-            colWidth=0;
-
-          if(colWidth!=0)
-            {
-            if((colWidth>0)&&(colWidth<1))
-               var colWidth=(colWidth*100)+"%;";
-            else
-               var colWidth=colWidth+"px;";
-               
-            colHdrStyle+="width:"+colWidth+col.hdrStyle;
-            colBodyStyle+="width:"+colWidth;
-//            colHdrStyle+="max-width:"+colWidth;
-//            colBodyStyle+="max-width:"+colWidth;
-            col.widthText=colWidth;
-            }
-
-          ////////
-
           if(!col.hasOwnProperty('name'))
-             col.name="col"+(i+1);
-
+            col.name="col"+(c+1);
+            
           if(!col.hasOwnProperty('align'))
-             col.align="";
+	    col.align="";
 
-          if(col.hasOwnProperty('hidden'))
-            { colHidden=col.hidden; }
-          else
-            {
-            colHidden=false;
-            col['hidden']=false;
-            }
-
+	  if(col.hasOwnProperty('hidden'))
+	    { colHidden=col.hidden; }
+	  else
+	    {
+	    colHidden=false;
+	    col.hidden=false;
+	    }
+	    
           if(!colHidden)
             visibleColumnCount++;
-            
-          colClass=(col.class!=""?col.class+" ":"");
-          if(colHidden)
-            {
-            colHdrStyle +="display:none;";
-            colBodyStyle+="display:none;";
-            }
-          else
-            {
-            colClass+=ULC;
-            ULC="";
-            }
-          ////////
-
-          colClass+="ui-btn-up-"+settings.headerTheme+" ui-jqmGrid-col-header";
-          gridHdrColsHTML  += '<th id="'+col.name+'"'+(colHdrStyle==''?'':' style="'+colHdrStyle+'"')+' class="hdr-col-cell '+colClass+'">'+colLabel+'</th>';
-          bodyHdrColsHTML  += '<th id="'+col.name+'"'+(colBodyStyle==''?'':' style="'+colBodyStyle+'"')+' class="body-col-cell ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>';
-          /*
-
-          ui-jqmGrid-table-background should be added to the <th> of the "bodyHeader" when the grid is empty (no rows)
-                and removed when there is a least 1 row.
-
-          */
-
-
           }
 
+        
+        for(r=0;r<headerRows.length;r++)
+          {
+          gridHdrColsHTML[r]="";
+          bodyHdrColsHTML[r]="";
+          headerRow=headerRows[r];
+          
+	  for(c=0;c<headerRow.length;c++)
+	    {
+col=cols[c];
+
+	    hdr=headerRow[c];
+
+	    colHdrStyle="";
+	    colBodyStyle="";
+
+if(!col.hasOwnProperty('label'))
+  col.label="";
+
+	    if(!hdr.hasOwnProperty('label'))
+	      hdr.label="";
+	    colLabel=hdr.label;
+
+            ////////
+
+            if(!hdr.hasOwnProperty('class'))
+              hdr.class="";
+            
+            ////////
+
+            if(!hdr.hasOwnProperty('style'))
+              hdr.style="";
+
+            ////////
+
+	    col.widthText="";
+	    if(hdr.hasOwnProperty('width'))
+	      colWidth=hdr.width;
+	    else
+	      colWidth=0;
+
+	    if(colWidth!=0)
+	      {
+	      if((colWidth>0)&&(colWidth<1))
+		 var colWidth=(colWidth*100)+"%;";
+	      else
+		 var colWidth=colWidth+"px;";
+
+	      colHdrStyle+="width:"+colWidth+hdr.Style;
+	      colBodyStyle+="width:"+colWidth;
+	      hdr.widthText=colWidth;
+	      }
+
+	    ////////
+
+	    if(hdr.hasOwnProperty('hidden'))
+	      { colHidden=hdr.hidden; }
+	    else
+	      {
+	      colHidden=false;
+	      hdr.hidden=false;
+	      }
+
+	    colClass=(hdr.class!=""?hdr.class+" ":"");
+	    if(colHidden)
+	      {
+	      colHdrStyle +="display:none;";
+	      colBodyStyle+="display:none;";
+	      }
+	    else
+	      {
+	      colClass+=ULC;
+	      ULC="";
+	      }
+	      
+	    ////////
+
+	    colClass+="ui-btn-up-"+settings.headerTheme+" ui-jqmGrid-col-header";
+	    gridHdrColsHTML[r]  += '<th id="'+hdr.name+'"'+(colHdrStyle ==''?'':' style="'+colHdrStyle +'"')+' class="hdr-col-cell '+colClass+'">'+colLabel+'</th>';
+	    bodyHdrColsHTML[r]  += '<th id="'+hdr.name+'"'+(colBodyStyle==''?'':' style="'+colBodyStyle+'"')+' class="body-col-cell ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>';
+	    /*
+
+	    ui-jqmGrid-table-background should be added to the <th> of the "bodyHeader" when the grid is empty (no rows)
+		  and removed when there is a least 1 row.
+
+	    */
+
+
+	    }
+          }
 
         var
           gridHTML =  '<div id="'+BaseID+'div-table-wrapper" class="ui-jqmGrid-div-table-wrapper"'+(divFullStyle==''?'':' style="'+divFullStyle+'"')+'>';
@@ -781,7 +816,7 @@ var methods=
           gridHTML +=     '<table id="'+BaseID+'table-header" class="ui-jqmGrid-table-header">';
           gridHTML +=       '<thead>';
           gridHTML +=         '<tr class="'+BC+'">';
-          gridHTML +=            gridHdrColsHTML+'<th id="scrollbar" style="width:'+scrollBarWidth+'px;padding-left:0px;padding-right:0px;" class="ui-jqmGrid-ur ui-jqmGrid-col-header"></th>';
+          gridHTML +=            gridHdrColsHTML[0]+'<th id="scrollbar" style="width:'+scrollBarWidth+'px;padding-left:0px;padding-right:0px;" class="ui-jqmGrid-ur ui-jqmGrid-col-header"></th>';
           gridHTML +=         '</tr>';
           gridHTML +=       '</thead>';
           gridHTML +=     '</table>';
@@ -791,7 +826,7 @@ var methods=
           gridHTML +=     '<table id="'+this.id+'" class="ui-jqmGrid-table">';
           gridHTML +=       '<thead>';
           gridHTML +=         '<tr>';
-          gridHTML +=            bodyHdrColsHTML;
+          gridHTML +=            bodyHdrColsHTML[0];
           gridHTML +=         '</tr>';
           gridHTML +=       '</thead>';
           gridHTML +=       '<tbody>';
@@ -863,7 +898,6 @@ var methods=
                 "mouseout.jqmGrid": function(){$(this).removeClass(BHvD).addClass(BUpD);}
                 },
                 "tbody tr");       
-    
         });
 
     },
@@ -968,6 +1002,8 @@ $.fn.jqmGrid.defaultOptions =
   'useCORS'             : false,
   'dataPumpURL'         : '',
   'initialSortedColumn' : null,
+  'columnHeader'        : [],
+  'reflowColumns'       : [],
   'columns'             : []
   };
 
@@ -993,7 +1029,7 @@ return(v);
 }
 
 
-function extractSettings(Grid,columnRow)
+function extractSettings(Grid,columnRows)
 
 {
 var Settings=new Object;
@@ -1006,74 +1042,117 @@ Settings.rowsPerPage=pullAttr(Grid,"data-set-rows-per-page",20);
 Settings.dataPumpURL=pullAttr(Grid,"data-set-data-pump-url","");
 Settings.useCORS    =pullAttr(Grid,"data-set-data-pump-use-CORS","false").toLowerCase()==="true";
 
-Settings.columns=[];
+Settings.columnHeaders=[];
+Settings.reflowColumns=[];
+Settings.columns      =[];
 Settings.initialSortedColumn=null;
-columnRow.each(function(index,th)
+
+columnRows.each(function(rowIndex,tr)
   {
-  var column=new Object;
-  /////////
-  column.index=index;
-  /////////
-  column.name =th.id;
-  /////////
-  column.label=th.innerHTML;
-  /////////
-  var hidden=$(th).attr("data-hidden");
-  if(typeof hidden==="undefined")
-    hidden=false
-  else if (typeof hidden==="string")
-    hidden=(hidden.toLowerCase()==="true");
-  column.hidden=hidden;
-  /////////
-  var width=$(th).attr("width");
-  var isPercent=false;
-  if(typeof width==="undefined")
-    width=0;
-  else
+  var columnRow=$(tr).find("th");
+  Settings.columnHeaders[rowIndex]=[];
+  
+  columnRow.each(function(colIndex,th)
     {
-    isPercent=width.indexOf("%")>0;
-    width=parseFloat(width);
-    if(isNaN(width))
-       width=0
-    else if(isPercent)
-       width/=100
-    }
-  column.width=width;
-  /////////
-  var align=$(th).attr("align");
-  if(typeof align!=="undefined")
-    column.align=align;
-  /////////
-  var format=$(th).attr("data-format");
-  if(typeof format==="string")
-    {
-    try
-      { column.format=eval("("+format+");"); }
-    catch(e)
-      { column.format=function(){return "err";};}
-    }
-  /////////
-  var sortDir=$(th).attr("data-sort-direction");
-  if(typeof sortDir==="string")
-    {
-    sortDir=sortDir.toLowerCase();
-    if(sortDir=="desc")
-      {
-      column.ascend=false;
-      Settings.initialSortedColumn=column;
-      }
-    else if(sortDir=="asc")
-      {
-      column.ascend=true;
-      Settings.initialSortedColumn=column;
-      }
-    }
- 
-  /////////
+    var selTH=$(th);
+    var column=new Object;
+    var header=new Object;
 
-  Settings.columns[index]=column;
+header.rowSpan=1;
+header.colSpan=1;
+    
+    /////////
+    
+    column.index=colIndex;
+    header.index=colIndex;
+    
+    /////////
+    
+    column.name=th.id;
+    header.name=th.id;
+    
+    /////////
+    
+    column.label=th.innerHTML;
+    header.label=th.innerHTML;
+    
+    /////////
+    var hidden=selTH.attr("data-hidden");
+    if(typeof hidden==="undefined")
+      hidden=false
+    else if (typeof hidden==="string")
+      hidden=(hidden.toLowerCase()==="true");
+    column.hidden=hidden;
+    header.hidden=hidden;
+    
+    /////////
+    
+    var width=selTH.attr("width");
+    var isPercent=false;
+    if(typeof width==="undefined")
+      width=0;
+    else
+      {
+      isPercent=width.indexOf("%")>0;
+      width=parseFloat(width);
+      if(isNaN(width))
+	 width=0
+      else if(isPercent)
+	 width/=100
+      }
+    column.width=width;
+    header.width=width;
+    
+    /////////
+    
+    var align;
+
+    align=selTH.attr("header-align");
+    if(typeof align==="undefined")
+      align=selTH.attr("align");
+    if(typeof align!=="undefined")
+      header.align=align;
+
+    align=selTH.attr("cell-align");
+    if(typeof align==="undefined")
+      align=selTH.attr("align");
+    if(typeof align!=="undefined")
+      column.align=align;
+      
+    /////////
+    
+    var format=selTH.attr("data-format");
+    if(typeof format==="string")
+      {
+      try
+	{ column.format=eval("("+format+");"); }
+      catch(e)
+	{ column.format=function(){return "err";};}
+      }
+    /////////
+    var sortDir=selTH.attr("data-sort-direction");
+    if(typeof sortDir==="string")
+      {
+      sortDir=sortDir.toLowerCase();
+      if(sortDir=="desc")
+	{
+	column.ascend=false;
+	Settings.initialSortedColumn=column;
+	}
+      else if(sortDir=="asc")
+	{
+	column.ascend=true;
+	Settings.initialSortedColumn=column;
+	}
+      }
+
+    /////////
+
+    Settings.columnHeaders[rowIndex][colIndex]=header;
+    Settings.columns[colIndex]=column;
+    });
   });
-
+  
 return(Settings);
 }
 
@@ -1114,17 +1193,20 @@ function enhanceGrids()
 $("table:jqmData(role='grid')").each(function()
   {
   var Grid=$(this);
-  var columnRow=Grid.find("thead th");
-  if(columnRow.length==0)
-    columnRow=Grid.find("tr:jqmData(role='gridcolumns') th");
-  if(columnRow.length==0)
-    columnRow=Grid.find("tr:jqmData(role='gridcolumns') td");
-  if(columnRow.length==0)
-    columnRow=Grid.find("tr th");
+  
+//  var columnRow=Grid.find("thead th");
+//  if(columnRow.length==0)
+//    columnRow=Grid.find("tr:jqmData(role='gridcolumns') th");
+//  if(columnRow.length==0)
+//    columnRow=Grid.find("tr:jqmData(role='gridcolumns') td");
+//  if(columnRow.length==0)
+//    columnRow=Grid.find("tr th");
 
-  if(columnRow.length!=0)
+  var columnRows=Grid.find("thead tr");
+
+  if(columnRows.length!=0)
     {
-    var Settings=extractSettings(this,columnRow);
+    var Settings=extractSettings(this,columnRows);
     Grid.jqmGrid(Settings);
 
     newGrid=$("#"+this.id);
