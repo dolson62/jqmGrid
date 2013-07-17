@@ -1,86 +1,73 @@
 /////////////////////////////////////////////////////
 
-function dataColumnOfName(dataColumns,N)
+function dataColumnOfName(dataColumns,N) {
 
-{
-for(var i=0;i<dataColumns.length;i++)
-  if(dataColumns[i].name==N) return(dataColumns[i]);
+  for(var i=0;i<dataColumns.length;i++) {
+    if(dataColumns[i].name==N) return(dataColumns[i]);
+  }  
 
-return(null);
+  return(null);
 }
 
-function gridColClick(Grid,dataColumns,colID)
+function gridColClick(Grid,dataColumns,colID) {
 
-{
-var dataColumn=dataColumnOfName(dataColumns,colID);
-var sortedCol=Grid.data("sortedCol");
-if(!sortedCol)
-  dataColumn.ascend=false;
-else if(sortedCol.index!=dataColumn.index)
-  dataColumn.ascend=false;
+  var dataColumn=dataColumnOfName(dataColumns,colID);
+  var sortedCol=Grid.data("sortedCol");
+  if(!sortedCol) {
+    dataColumn.ascend=false;
+  } else if(sortedCol.index!=dataColumn.index) {
+    dataColumn.ascend=false;
+  }  
 
-dataColumn.ascend=(!dataColumn.ascend);
+  dataColumn.ascend=(!dataColumn.ascend);
 
-var dataPump=Grid.data("dataPump");
-dataPump.sortColumn(Grid,dataColumn);
-gridSiphonData(Grid);
+  var dataPump=Grid.data("dataPump");
+  dataPump.sortColumn(Grid,dataColumn);
+  gridSiphonData(Grid);
 }
 
-function gridLoadingMessage(Grid,method)
+function gridLoadingMessage(Grid,method) {
 
-{
-var msg=$("#"+Grid.attr("id")+"-div-loading-msg");
-if(method=="show")
-  msg.show()
-else
-  msg.hide();
+  var msg=$("#"+Grid.attr("id")+"-div-loading-msg");
+  if(method=="show") {
+    msg.show()
+  } else {
+    msg.hide();
+  }  
 }
 
-function gridFull(Grid)
-
-{
-return($(Grid.data("fullID")));
+function gridFull(Grid) {
+  return($(Grid.data("fullID")));
 }
 
-function gridHeader(Grid)
-
-{
-return($(Grid.data("headerID")));
+function gridHeader(Grid) {
+  return($(Grid.data("headerID")));
 }
 
-function gridHeaderCell(Grid,colID)
-
-{
-var dataColumns=Grid.data("dataColumns");
-var dataColumn=dataColumnOfName(dataColumns,colID);
-if(dataColumn)
-  {
-  return(gridHeader(Grid).find("th#"+dataColumn.name));
+function gridHeaderCell(Grid,colID) {
+  var dataColumns=Grid.data("dataColumns");
+  var dataColumn=dataColumnOfName(dataColumns,colID);
+  if(dataColumn) {
+    return(gridHeader(Grid).find("th#"+dataColumn.name))
+  } else {
+    return($());
   }
-else
-  return($());
 }
 
-function gridShowHideColumn(Grid,colID,hide)
-
-{
-var fg=gridFull(Grid);
-var dataColumns=Grid.data("dataColumns");
-var dataColumn=dataColumnOfName(dataColumns,colID);
-if(dataColumn)
-  {
-  var cells=fg.find("td#"+dataColumn.name+", th#"+dataColumn.name);
-  if(hide)
-    {
-    dataColumn.hidden=true;
-    cells.hide();
-    dataColumns.visibleColumnCount--;
-    }
-  else
-    {
-    dataColumn.hidden=false;
-    cells.show();
-    dataColumns.visibleColumnCount++;
+function gridShowHideColumn(Grid,colID,hide) {
+  var fg=gridFull(Grid);
+  var dataColumns=Grid.data("dataColumns");
+  var dataColumn=dataColumnOfName(dataColumns,colID);
+  if(dataColumn) {
+    var cells=fg.find("td#"+dataColumn.name+", th#"+dataColumn.name);
+    if(hide) {
+      dataColumn.hidden=true;
+      cells.hide();
+      dataColumns.visibleColumnCount--;
+    } else {
+      dataColumn.hidden=false;
+      cells.show();
+      dataColumns.visibleColumnCount++;
     }
   }
 }
@@ -643,7 +630,6 @@ var methods=
 
         var scrollBarWidth=20;  // width on latest ver of chrome - need to find a way to calc this value for each browser
 
-
         var divFullStyle="";
         var divBodyStyle="";
         if(settings.height!=-1)
@@ -661,13 +647,12 @@ var methods=
         var BC="ui-btn-up-"+settings.headerTheme;
 
         var dataColumns=settings.columns;
-        var headerRows=settings.columnHeaders;
 
+        var r=0,c=0;
         var dataColumn,header;
         var colLabel,colHdrStyle,colBodyStyle,colClass,colWidth,colHidden;
         var ULC="ui-jqmGrid-ul ";
 
-        var r=0,c=0;
         var gridHdrColsHTML=[];
         var bodyHdrColsHTML=[];
         var headerRow;
@@ -681,6 +666,9 @@ var methods=
           dataColumn.ascend=false;
 
           ////////
+
+          if((dataColumn)&&(!dataColumn.hasOwnProperty('label')))
+             dataColumn.label="";
 
           if(!dataColumn.hasOwnProperty('format'))
             dataColumn.format=null;
@@ -715,6 +703,19 @@ var methods=
             visibleColumnCount++;
           }
 
+        var headerRows=settings.columnHeaders;
+        if(!headerRows)
+          {
+          headerRows=[[]];
+          for(c=0;c<dataColumns.length;c++)
+             {
+             header = $.extend({colSpan: 1,rowSpan:1}, dataColumns[c]);
+             headerRows[0][c] = header;
+             }
+
+          settings.columnHeaders=headerRows;
+          }
+
         var numberHeaderRows=headerRows.length;
         for(r=0;r<numberHeaderRows;r++)
           {
@@ -722,20 +723,17 @@ var methods=
           bodyHdrColsHTML[r]="";
           headerRow=headerRows[r];
 
-	  for(c=0;c<headerRow.length;c++)
-	    {
-	    header=headerRow[c];
-	    dataColumn=header.dataColumn;
+          for(c=0;c<headerRow.length;c++)
+            {
+            header=headerRow[c];
+            dataColumn=header.dataColumn;
 
-	    colHdrStyle="";
-	    colBodyStyle="";
+            colHdrStyle="";
+            colBodyStyle="";
 
-if((dataColumn)&&(!dataColumn.hasOwnProperty('label')))
-  dataColumn.label="";
-
-	    if(!header.hasOwnProperty('label'))
-	      header.label="";
-	    colLabel=header.label;
+            if(!header.hasOwnProperty('label'))
+              header.label="";
+            colLabel=header.label;
 
             ////////
 
@@ -749,64 +747,64 @@ if((dataColumn)&&(!dataColumn.hasOwnProperty('label')))
 
             ////////
 
-	    if(dataColumn)
-	      dataColumn.widthText="";
+            if(dataColumn)
+              dataColumn.widthText="";
 
-	    if(header.hasOwnProperty('width'))
-	      colWidth=header.width;
-	    else
-	      colWidth=0;
+            if(header.hasOwnProperty('width'))
+              colWidth=header.width;
+            else
+              colWidth=0;
 
-	    if(colWidth!=0)
-	      {
-	      if((colWidth>0)&&(colWidth<1))
-		 colWidth=(colWidth*100)+"%;";
-	      else
-		 colWidth=colWidth+"px;";
+            if(colWidth!=0)
+              {
+              if((colWidth>0)&&(colWidth<1))
+                 colWidth=(colWidth*100)+"%;";
+              else
+                 colWidth=colWidth+"px;";
 
-	      colHdrStyle+="width:"+colWidth+header.Style;
-	      colBodyStyle+="width:"+colWidth;
-	      header.widthText=colWidth;
+              colHdrStyle+="width:"+colWidth+header.style;
+              colBodyStyle+="width:"+colWidth;
+              header.widthText=colWidth;
               if(dataColumn)
                 dataColumn.widthText=colWidth;
-	      }
+              }
 
-	    ////////
+            ////////
 
-	    if(header.hasOwnProperty('hidden'))
-	      { colHidden=header.hidden; }
-	    else
-	      {
-	      colHidden=false;
-	      header.hidden=false;
-	      }
+            if(header.hasOwnProperty('hidden'))
+              { colHidden=header.hidden; }
+            else
+              {
+              colHidden=false;
+              header.hidden=false;
+              }
 
-	    colClass=(header.class!=""?header.class+" ":"");
-	    if(colHidden)
-	      {
-	      colHdrStyle +="display:none;";
-	      colBodyStyle+="display:none;";
-	      }
-	    else
-	      {
-	      colClass+=ULC;
-	      ULC="";
-	      }
+            colClass=(header.class!=""?header.class+" ":"");
+            if(colHidden)
+              {
+              colHdrStyle +="display:none;";
+              colBodyStyle+="display:none;";
+              }
+            else
+              {
+              colClass+=ULC;
+              ULC="";
+              }
 
-	    ////////
+            ////////
 
-	    colClass+="ui-btn-up-"+settings.headerTheme+" ui-jqmGrid-col-header";
-	    gridHdrColsHTML[r]  += '<th id="'+header.name+'"'+(colHdrStyle ==''?'':' style="'+colHdrStyle +'"')+' class="hdr-col-cell '+colClass+'"'+(header.colSpan<2?'':' colspan='+header.colSpan)+(header.rowSpan<2?'':' rowspan='+header.rowSpan)+'>'+colLabel+'</th>';
-	    bodyHdrColsHTML[r]  += '<th id="'+header.name+'"'+(colBodyStyle==''?'':' style="'+colBodyStyle+'"')+' class="body-col-cell ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>';
-	    /*
+            colClass+="ui-btn-up-"+settings.headerTheme+" ui-jqmGrid-col-header";
+            gridHdrColsHTML[r]  += '<th id="'+header.name+'"'+(colHdrStyle ==''?'':' style="'+colHdrStyle +'"')+' class="hdr-col-cell '+colClass+'"'+(header.colSpan<2?'':' colspan='+header.colSpan)+(header.rowSpan<2?'':' rowspan='+header.rowSpan)+'>'+colLabel+'</th>';
+            bodyHdrColsHTML[r]  += '<th id="'+header.name+'"'+(colBodyStyle==''?'':' style="'+colBodyStyle+'"')+' class="body-col-cell ui-jqmGrid-body-col-cell ui-jqmGrid-table-background"></th>';
+            /*
 
-	    ui-jqmGrid-table-background should be added to the <th> of the "bodyHeader" when the grid is empty (no rows)
-		  and removed when there is a least 1 row.
+            ui-jqmGrid-table-background should be added to the <th> of the "bodyHeader" when the grid is empty (no rows)
+                  and removed when there is a least 1 row.
 
-	    */
+            */
 
 
-	    }
+            }
           }
 
         var
@@ -815,7 +813,7 @@ if((dataColumn)&&(!dataColumn.hasOwnProperty('label')))
           gridHTML +=     '<div id="'+BaseID+'div-loading-msg-inner" class="ui-jqmGrid-div-table-loading-data-msg-inner">Loading...';
           gridHTML +=     '</div>';
           gridHTML +=  '</div>';
-          gridHTML +=   '<div id="'+BaseID+'div-table-header" class="ui-jqmGrid-div-table-header">';
+          gridHTML +=  '<div id="'+BaseID+'div-table-header" class="ui-jqmGrid-div-table-header">';
 
           gridHTML +=     '<table id="'+BaseID+'table-header" class="ui-jqmGrid-table-header">';
           gridHTML +=       '<thead>';
@@ -1012,7 +1010,7 @@ $.fn.jqmGrid.defaultOptions =
   'useCORS'             : false,
   'dataPumpURL'         : '',
   'initialSortedColumn' : null,
-  'columnHeader'        : [],
+  'columnHeaders'       : null,
   'reflowColumns'       : [],
   'columns'             : []
   };
@@ -1062,6 +1060,8 @@ Settings.minHeight  =pullAttr(Grid,"min-height",-1);
 Settings.rowsPerPage=pullAttr(Grid,"data-set-rows-per-page",20);
 Settings.dataPumpURL=pullAttr(Grid,"data-set-data-pump-url","");
 Settings.useCORS    =pullAttr(Grid,"data-set-data-pump-use-CORS","false").toLowerCase()==="true";
+
+if (columnRows.length==0) return(Settings);
 
 Settings.columnHeaders=[];
 Settings.reflowColumns=[];
